@@ -12,6 +12,7 @@ typedef std::shared_ptr<xcb_connection_t> Connection;
 typedef std::shared_ptr<xcb_generic_event_t> Event;
 typedef const xcb_screen_t* Screen;
 typedef xcb_drawable_t Drawable;
+typedef xcb_gcontext_t GContext;
 
 // Wraps a xcb_connection_t in a shared pointer that will correctly call
 // xcb_disconnect when all the connection is no longer in use.
@@ -21,6 +22,9 @@ Connection connect();
 // Wraps a xcb_generic_event_t from xcb_wait_for_event in a shared_ptr that will
 // correctly free itself.
 Event waitForEvent(const Connection& conn);
+
+// Creates a graphics context for a drawable
+GContext createGContext(const Connection& conn, Drawable target);
 
 } //namespace x
 } //namespace wallgen
