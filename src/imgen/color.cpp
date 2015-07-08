@@ -1,7 +1,7 @@
 #include "imgen/color.hpp"
 
 namespace imgen {
-    color random_colour() {
+    color random_color() {
         auto min = gil::channel_traits<channel>::min_value();
         auto max = gil::channel_traits<channel>::max_value();
 

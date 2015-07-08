@@ -52,5 +52,5 @@ BOOST_PYTHON_MODULE(imgen) {
         .def_readwrite("colors", &imgen::palette::colors)
         .def("blend", py::pure_virtual(&imgen::palette::blend));
 
-    py::def("random_colour", &imgen::random_colour);
+    py::def("random_colour", &imgen::random_color);
 }
