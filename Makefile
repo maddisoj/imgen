@@ -1,14 +1,13 @@
 CC = g++
 SRCDIR := src
 BUILDDIR := build
-TARGET := bin/wallgen
-
+TARGET := bin/imgen
 CFLAGS := -std=c++11 -pedantic -Wall -Wextra \
     -Wno-variadic-macros -Wno-unused-variable \
     -fexceptions -g
 SRC := $(shell find $(SRCDIR) -type f -name *.cpp)
 OBJ := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRC:.cpp=.o))
-LIB = -lxcb -lformat
+LIB = -lpng -lformat -lboost_program_options
 
 $(TARGET): $(OBJ)
 	@mkdir -p $(dir $@)
@@ -20,8 +19,5 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 clean:
 	rm -r "$(BUILDDIR)" "$(TARGET)"
-
-run:
-	@./$(TARGET)
 
 .PHONY: clean
