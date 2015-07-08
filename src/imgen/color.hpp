@@ -8,6 +8,9 @@ namespace imgen {
 
     typedef gil::rgb8_pixel_t color_t;
     typedef gil::channel_type<color_t>::type channel_t;
+
+    /** Creates a random colour */
+    color_t random_colour();
 } // namespace imgen
 
 #endif // IMGEN_COLOR_HPP_

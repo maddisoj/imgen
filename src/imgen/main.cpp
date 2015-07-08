@@ -3,15 +3,21 @@
 #define int_p_NULL (int*)NULL
 #define png_bytep_NULL (png_bytep)NULL
 
+#include "imgen/color.hpp"
+
 #include <boost/program_options.hpp>
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
 #include <format.h>
 
+#include <cstdlib>
+
 namespace po = boost::program_options;
 namespace gil = boost::gil;
 
 int main(int argc, char** argv) {
+    std::srand(std::time(0));
+
     po::options_description desc("Options");
     po::variables_map vm;
 
@@ -22,20 +28,25 @@ int main(int argc, char** argv) {
         ("dest,d", po::value<std::string>()->required(), "The output path for the image");
 
     po::store(po::parse_command_line(argc, argv, desc), vm);
-    po::notify(vm);
 
     if(vm.count("help")) {
         fmt::print("{}", desc);
     } else {
-        auto dest = vm["dest"].as<std::string>();
-        auto width = vm["width"].as<int>();
-        auto height = vm["height"].as<int>();
+        try {
+            po::notify(vm);
 
-        gil::rgb8_image_t img(width, height);
-        gil::rgb8_pixel_t red(255, 0, 0);
+            auto dest = vm["dest"].as<std::string>();
+            auto width = vm["width"].as<int>();
+            auto height = vm["height"].as<int>();
 
-        gil::fill_pixels(gil::view(img), red);
-        gil::png_write_view(dest, gil::const_view(img));
+            gil::rgb8_image_t img(width, height);
+            imgen::color_t color = imgen::random_colour();
+
+            gil::fill_pixels(gil::view(img), color);
+            gil::png_write_view(dest, gil::const_view(img));
+        } catch(po::error& e) {
+            fmt::print("Error: {}\n{}", e.what(), desc);
+        }
     }
 
     return 0;
