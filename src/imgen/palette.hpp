@@ -16,10 +16,10 @@ namespace imgen {
      */
     class palette {
         public:
-            std::vector<color> colors;
+            std::vector<color_t> colors;
 
             /** Proptionally blends two colours in the palette. */
-            virtual color blend(int left, int right, float proportion) = 0;
+            virtual color_t blend(int left, int right, float proportion) = 0;
     };
 
 } // namespace imgen

@@ -6,9 +6,8 @@
 namespace imgen {
     namespace gil = boost::gil;
 
-    /** Alias to the GIL pixel type imgen is using as it's colour type. */
-    typedef gil::rgb8_pixel_t color;
-
+    typedef gil::rgb8_pixel_t color_t;
+    typedef gil::channel_type<color_t>::type channel_t;
 } // namespace imgen
 
 #endif // IMGEN_COLOR_HPP_

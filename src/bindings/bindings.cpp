@@ -10,29 +10,29 @@ namespace py = boost::python;
 
 /** Palette Wrappers */
 struct palette_wrapper : imgen::palette, py::wrapper<imgen::palette> {
-    imgen::color blend(int left, int right, float proportion) {
+    imgen::color_t blend(int left, int right, float proportion) {
         return this->get_override("blend")(left, right, proportion);
     }
 };
 
 /** Colour Wrappers */
-typedef std::vector<imgen::color> color_vec_t;
-typedef boost::gil::channel_type<imgen::color>::type channel_t;
+typedef std::vector<imgen::color_t> color_vec_t;
+typedef boost::gil::channel_type<imgen::color_t>::type channel_t;
 
 inline void color_check_range(int index) {
-    if(index < 0 || index > boost::gil::num_channels<imgen::color>()) {
+    if(index < 0 || index > boost::gil::num_channels<imgen::color_t>()) {
         PyErr_SetString(PyExc_IndexError, "Index out of range");
         py::throw_error_already_set();
     }
 }
 
-channel_t color_getitem(imgen::color& c, int index) {
+channel_t color_getitem(imgen::color_t& c, int index) {
     color_check_range(index);
 
     return c[index];
 }
 
-void color_setitem(imgen::color& c, int index, channel_t value) {
+void color_setitem(imgen::color_t& c, int index, channel_t value) {
     color_check_range(index);
 
     c[index] = value;
@@ -41,7 +41,7 @@ void color_setitem(imgen::color& c, int index, channel_t value) {
 
 /** Bindings */
 BOOST_PYTHON_MODULE(imgen) {
-    py::class_<imgen::color>("Color", py::init<int, int, int>())
+    py::class_<imgen::color_t>("Color", py::init<int, int, int>())
         .def("__getitem__", &color_getitem)
         .def("__setitem__", &color_setitem);
 
