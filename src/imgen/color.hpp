@@ -6,7 +6,7 @@
 namespace imgen {
     namespace gil = boost::gil;
 
-    typedef gil::rgb8_pixel_t colour;
+    typedef gil::rgb8_pixel_t color;
 } // namespace imgen
 
 #endif // IMGEN_COLOUR_HPP_

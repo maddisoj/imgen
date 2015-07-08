@@ -4,7 +4,7 @@
 #include <boost/gil/gil_all.hpp>
 #include <vector>
 
-#include "colour.hpp"
+#include "color.hpp"
 
 namespace imgen {
     /** alias for boost gil */
@@ -16,10 +16,10 @@ namespace imgen {
      */
     class palette {
         public:
-            std::vector<colour> colours;
+            std::vector<color> colors;
 
             /** Proptionally blends two colours in the palette. */
-            virtual colour blend(int left, int right, float proportion) = 0;
+            virtual color blend(int left, int right, float proportion) = 0;
     };
 
 } // namespace imgen
