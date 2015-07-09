@@ -11,6 +11,7 @@
 #include <format.h>
 
 #include <cstdlib>
+#include <iostream>
 
 namespace po = boost::program_options;
 namespace gil = boost::gil;
@@ -40,7 +41,9 @@ int main(int argc, char** argv) {
             auto height = vm["height"].as<int>();
 
             gil::rgb8_image_t img(width, height);
-            imgen::color_t color = imgen::random_colour();
+            auto color = imgen::random_color();
+
+            std::cout << color << std::endl;
 
             gil::fill_pixels(gil::view(img), color);
             gil::png_write_view(dest, gil::const_view(img));
