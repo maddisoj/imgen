@@ -26,13 +26,13 @@ inline void color_check_range(int index) {
     }
 }
 
-channel_t color_getitem(imgen::color_t& c, int index) {
+channel_t color_getitem(imgen::color_t& c, std::size_t index) {
     color_check_range(index);
 
     return c[index];
 }
 
-void color_setitem(imgen::color_t& c, int index, channel_t value) {
+void color_setitem(imgen::color_t& c, std::size_t index, channel_t value) {
     color_check_range(index);
 
     c[index] = value;
@@ -41,7 +41,7 @@ void color_setitem(imgen::color_t& c, int index, channel_t value) {
 
 /** Bindings */
 BOOST_PYTHON_MODULE(imgen) {
-    py::class_<imgen::color_t>("Color", py::init<int, int, int>())
+    py::class_<imgen::color_t>("Color", py::init<channel_t, channel_t, channel_t>())
         .def("__getitem__", &color_getitem)
         .def("__setitem__", &color_setitem);
 
