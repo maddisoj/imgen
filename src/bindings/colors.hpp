@@ -54,6 +54,17 @@ namespace imgen { namespace bindings {
             .def("__getitem__", &color_get_item<ColorBase, Channel>)
             .def("__setitem__", &color_set_item<ColorBase, Channel>);
     }
+
+    /** Thin wrapper around boost::gil::color_convert to create the dest type
+        the instead of returning by reference. */
+    template<typename SrcP, typename DestP>
+    DestP color_convert(const SrcP& src) {
+        DestP dst;
+
+        gil::color_convert(src, dst);
+
+        return dst;
+    }
 } } // namespace imgen::bindings
 
 #endif // BINDINGS_COLORS_HPP_

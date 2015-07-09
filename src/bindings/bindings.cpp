@@ -4,6 +4,7 @@
 
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+#include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/toolbox/hsl.hpp>
 
 #include <vector>
@@ -35,4 +36,6 @@ BOOST_PYTHON_MODULE(imgen) {
         .def("blend", py::pure_virtual(&imgen::palette::blend));
 
     py::def("random_color", &imgen::random_color);
+    py::def("rgb2hsl", &ib::color_convert<gil::rgb8_pixel_t, gil::hsl32f_pixel_t>);
+    py::def("hsl2rgb", &ib::color_convert<gil::hsl32f_pixel_t, gil::rgb8_pixel_t>);
 }
