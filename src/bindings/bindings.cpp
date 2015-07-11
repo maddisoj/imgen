@@ -1,11 +1,11 @@
 #include "imgen/color.hpp"
 #include "imgen/palette.hpp"
+#include "imgen/hsl.hpp"
 #include "bindings/colors.hpp"
 
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/toolbox/hsl.hpp>
 
 #include <vector>
 
