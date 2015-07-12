@@ -1,5 +1,5 @@
 __pycache__
-imgen
+/imgen
 build
 lib
 .ycm_extra_conf.*
