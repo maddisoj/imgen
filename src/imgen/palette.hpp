@@ -1,25 +1,34 @@
 #ifndef IMGEN_PALETTE_HPP_
 #define IMGEN_PALETTE_HPP_
 
+#include "imgen/color.hpp"
+#include "imgen/linker.hpp"
+
 #include <boost/gil/gil_all.hpp>
+namespace gil = boost::gil;
+
 #include <vector>
 
-#include "color.hpp"
-
 namespace imgen {
-
-namespace gil = boost::gil;
 
 /**
  * A palette defines the colours available for the current image and
  * provides methods for mixing between those colours.
  */
 class palette {
-    public:
-        std::vector<color_t> colors;
+public:
+    std::vector<color_t> colors;
+};
 
-        /** Proptionally blends two colours in the palette. */
-        virtual color_t blend(int left, int right, float proportion) = 0;
+/**
+ * The linker for extracting palettes
+ */
+struct palette_linker : linker<palette> {
+    using linker<palette>::linker;
+
+    const std::string python_class() {
+        return "Palette";
+    }
 };
 
 } // namespace imgen

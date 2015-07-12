@@ -13,13 +13,6 @@ namespace py = boost::python;
 namespace gil = boost::gil;
 namespace ib = imgen::bindings;
 
-/** Palette Wrappers */
-struct palette_wrapper : imgen::palette, py::wrapper<imgen::palette> {
-    imgen::color_t blend(int left, int right, float proportion) {
-        return this->get_override("blend")(left, right, proportion);
-    }
-};
-
 /** Colour Wrappers */
 typedef std::vector<imgen::color_t> color_vec_t;
 
@@ -31,9 +24,8 @@ BOOST_PYTHON_MODULE(imgen) {
     py::class_<color_vec_t>("ColorList")
         .def(py::vector_indexing_suite<color_vec_t>());
 
-    py::class_<palette_wrapper, boost::noncopyable>("Palette")
-        .def_readwrite("colors", &imgen::palette::colors)
-        .def("blend", py::pure_virtual(&imgen::palette::blend));
+    py::class_<imgen::palette, boost::noncopyable>("Palette")
+        .def_readwrite("colors", &imgen::palette::colors);
 
     py::def("random_rgb", &imgen::random_color<gil::rgb8_pixel_t>);
     py::def("random_hsl", &imgen::random_color<gil::hsl32f_pixel_t>);
