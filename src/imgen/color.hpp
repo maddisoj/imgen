@@ -17,8 +17,8 @@ typedef gil::channel_type<color_t>::type channel_t;
 
 template<typename ColorBase>
 ColorBase random_color() {
-    /** Use bits8 to generate the random number in so we can take advantage of
-     * the modulus operator.
+    /** Use bits8 to generate the random number so we can take advantage of
+     *  the modulus operator.
      */
     auto min = gil::channel_traits<gil::bits8>::min_value();
     auto max = gil::channel_traits<gil::bits8>::max_value();
