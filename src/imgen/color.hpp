@@ -7,13 +7,15 @@
 #include <ostream>
 
 namespace imgen {
-    namespace gil = boost::gil;
 
-    typedef gil::rgb8_pixel_t color_t;
-    typedef gil::channel_type<color_t>::type channel_t;
+namespace gil = boost::gil;
 
-    /** Creates a random color */
-    color_t random_color();
+typedef gil::rgb8_pixel_t color_t;
+typedef gil::channel_type<color_t>::type channel_t;
+
+/** Creates a random color */
+color_t random_color();
+
 } // namespace imgen
 
 template<typename ChannelValue, typename Layout>
@@ -22,11 +24,9 @@ std::ostream& operator<<(std::ostream& os,
     auto num_channels
         = boost::gil::num_channels<boost::gil::pixel<ChannelValue, Layout> >();
 
-    os << "(";
     for(auto i = 0; i < num_channels; ++i) {
         os << color[i] << ((i == num_channels - 1) ? "" : ", ");
     }
-    os << ")";
 
     return os;
 }
@@ -37,11 +37,9 @@ std::ostream& operator<<(std::ostream& os,
     auto num_channels
         = boost::gil::num_channels<boost::gil::pixel<unsigned char, Layout> >();
 
-    os << "(";
     for(auto i = 0; i < num_channels; ++i) {
         os << static_cast<int>(color[i]) << ((i == num_channels - 1) ? "" : ", ");
     }
-    os << ")";
 
     return os;
 }

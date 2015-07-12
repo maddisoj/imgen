@@ -7,20 +7,20 @@
 #include "color.hpp"
 
 namespace imgen {
-    /** alias for boost gil */
-    namespace gil = boost::gil;
 
-    /**
-     * A palette defines the colours available for the current image and
-     * provides methods for mixing between those colours.
-     */
-    class palette {
-        public:
-            std::vector<color_t> colors;
+namespace gil = boost::gil;
 
-            /** Proptionally blends two colours in the palette. */
-            virtual color_t blend(int left, int right, float proportion) = 0;
-    };
+/**
+ * A palette defines the colours available for the current image and
+ * provides methods for mixing between those colours.
+ */
+class palette {
+    public:
+        std::vector<color_t> colors;
+
+        /** Proptionally blends two colours in the palette. */
+        virtual color_t blend(int left, int right, float proportion) = 0;
+};
 
 } // namespace imgen
 
