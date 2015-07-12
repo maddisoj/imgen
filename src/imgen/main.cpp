@@ -5,6 +5,7 @@
 
 #include "imgen/color.hpp"
 #include "imgen/hsl.hpp"
+#include "imgen/palette.hpp"
 
 #include <Python.h>
 #include <boost/filesystem.hpp>
@@ -43,32 +44,37 @@ int main(int argc, char** argv) {
         fmt::print("{}", desc);
     } else {
         try {
-            po::notify(vm);
+            // po::notify(vm);
+            // auto dest = vm["dest"].as<std::string>();
+            // auto width = vm["width"].as<int>();
+            // auto height = vm["height"].as<int>();
+
             Py_Initialize();
 
-            auto dest = vm["dest"].as<std::string>();
-            auto width = vm["width"].as<int>();
-            auto height = vm["height"].as<int>();
             auto main_module = py::import("__main__");
-            auto main_nmspc = main_module.attr("__dict__");
-            std::vector<fs::path> palettes;
-            fs::path exec_dir = fs::canonical(fs::system_complete(argv[0])).parent_path();
-            fs::path palettes_dir = exec_dir / "palettes";
+            py::dict main_nmspc = py::extract<py::dict>(main_module.attr("__dict__"));
+            auto exec_dir = fs::canonical(fs::system_complete(argv[0])).parent_path();
+            auto palettes_dir = exec_dir / "palettes";
+            imgen::palette_linker palette_linker(palettes_dir, main_nmspc);
 
-            main_nmspc["sys"] = py::import("sys");
-            main_nmspc["sys"].attr("path").attr("append")(palettes_dir.string());
+            auto names = palette_linker.get_names();
+            auto palette = palette_linker.extract(names[0]);
 
-            std::for_each(
-                fs::directory_iterator(palettes_dir), fs::directory_iterator(),
-                [&palettes](const fs::directory_entry& entry) {
-                    if(fs::is_regular_file(entry) && entry.path().extension() == ".py") {
-                        palettes.push_back(entry);
-                    }
+            gil::rgb8_image_t img(512, 100);
+            auto view = gil::view(img);
+            gil::fill_pixels(view, gil::rgb8_pixel_t(0, 0, 0));
+
+            for(int x = 0; x < img.width(); ++x) {
+                auto p = static_cast<float>(x) / static_cast<float>(img.width());
+                auto index = static_cast<int>(std::ceil(p * 3.0f));
+                auto color = palette->colors[index];
+
+                for(int y = 0; y < img.height(); ++y) {
+                    view(x, y) = color;
                 }
-            );
+            }
 
-            std::copy(palettes.begin(), palettes.end(),
-                      std::ostream_iterator<fs::path>(std::cout, "\n"));
+            gil::png_write_view("test.png", gil::const_view(img));
         } catch(const po::error& e) {
             fmt::print("Error: {}\n{}", e.what(), desc);
         } catch(const py::error_already_set& e) {
