@@ -2,9 +2,11 @@
 #define IMGEN_COLOR_HPP_
 
 #include <boost/gil/gil_all.hpp>
+#include <format.h>
 
 #include <string>
 #include <ostream>
+#include <cstdlib>
 
 namespace imgen {
 
@@ -13,8 +15,27 @@ namespace gil = boost::gil;
 typedef gil::rgb8_pixel_t color_t;
 typedef gil::channel_type<color_t>::type channel_t;
 
-/** Creates a random color */
-color_t random_color();
+template<typename ColorBase>
+ColorBase random_color() {
+    /** Use bits8 to generate the random number in so we can take advantage of
+     * the modulus operator.
+     */
+    auto min = gil::channel_traits<gil::bits8>::min_value();
+    auto max = gil::channel_traits<gil::bits8>::max_value();
+    auto num_channels = gil::num_channels<ColorBase>();
+    ColorBase color;
+
+    for(auto i = 0; i < num_channels; ++i) {
+        auto value = static_cast<gil::bits8>(min + std::rand() % (max - min + 1));
+
+        color[i] =
+            gil::channel_convert<typename gil::channel_type<ColorBase>::type>(
+                value
+            );
+    }
+
+    return color;
+}
 
 } // namespace imgen
 

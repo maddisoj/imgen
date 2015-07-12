@@ -16,7 +16,7 @@ setup(
             extra_compile_args=['-std=c++11'],
             sources=[
                 path.join(bindings_dir, './bindings.cpp'),
-                path.join(imgen_dir, './color.cpp')
+                # path.join(imgen_dir)
             ]
         )
     ]
