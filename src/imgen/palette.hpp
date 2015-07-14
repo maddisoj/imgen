@@ -1,13 +1,13 @@
 #ifndef IMGEN_PALETTE_HPP_
 #define IMGEN_PALETTE_HPP_
 
-#include "imgen/color.hpp"
 #include "imgen/linker.hpp"
 
 #include <boost/gil/gil_all.hpp>
-namespace gil = boost::gil;
 
 #include <vector>
+
+namespace gil = boost::gil;
 
 namespace imgen {
 
@@ -17,7 +17,7 @@ namespace imgen {
  */
 class palette {
 public:
-    std::vector<color_t> colors;
+    std::vector<gil::rgb32f_pixel_t> colors;
 };
 
 /**
