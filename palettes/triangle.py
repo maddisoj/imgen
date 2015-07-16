@@ -4,7 +4,7 @@ import math
 
 class Palette(imgen.Palette):
     def __init__(self):
-        imgen.Palette.__init__(self)
+        super().__init__()
 
         base = imgen.random_hsl()
         hues = [

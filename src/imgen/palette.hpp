@@ -15,9 +15,10 @@ namespace imgen {
  * A palette defines the colours available for the current image and
  * provides methods for mixing between those colours.
  */
-class palette {
-public:
+struct palette {
     std::vector<gil::rgb32f_pixel_t> colors;
+
+    virtual void blend() = 0;
 };
 
 /**

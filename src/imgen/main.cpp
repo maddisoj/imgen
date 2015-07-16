@@ -3,16 +3,16 @@
 #define int_p_NULL (int*)NULL
 #define png_bytep_NULL (png_bytep)NULL
 
-#include "imgen/color.hpp"
-#include "imgen/hsl.hpp"
+#include "imgen/image.hpp"
 #include "imgen/palette.hpp"
+#include "imgen/pattern.hpp"
 
 #include <Python.h>
 #include <boost/filesystem.hpp>
-#include <boost/gil/extension/io/png_dynamic_io.hpp>
-#include <boost/gil/gil_all.hpp>
 #include <boost/program_options.hpp>
+#include <boost/gil/gil_all.hpp>
 #include <boost/python.hpp>
+#include <cairo/cairo.h>
 #include <format.h>
 
 #include <algorithm>
@@ -44,37 +44,37 @@ int main(int argc, char** argv) {
         fmt::print("{}", desc);
     } else {
         try {
-            // po::notify(vm);
-            // auto dest = vm["dest"].as<std::string>();
-            // auto width = vm["width"].as<int>();
-            // auto height = vm["height"].as<int>();
+            po::notify(vm);
+            auto dest = vm["dest"].as<std::string>();
+            auto width = vm["width"].as<int>();
+            auto height = vm["height"].as<int>();
 
             Py_Initialize();
 
+            // Python Environment
             auto main_module = py::import("__main__");
             py::dict main_nmspc = py::extract<py::dict>(main_module.attr("__dict__"));
+
+            // Directories
             auto exec_dir = fs::canonical(fs::system_complete(argv[0])).parent_path();
             auto palettes_dir = exec_dir / "palettes";
+            auto patterns_dir = exec_dir / "patterns";
+
+            // Linkers
             imgen::palette_linker palette_linker(palettes_dir, main_nmspc);
+            imgen::pattern_linker pattern_linker(patterns_dir, main_nmspc);
 
-            auto names = palette_linker.get_names();
-            auto palette = palette_linker.extract(names[0]);
+            // Image
+            imgen::image img(width, height);
+            imgen::context ctx(img);
 
-            gil::rgb8_image_t img(512, 100);
-            auto view = gil::view(img);
-            gil::fill_pixels(view, gil::rgb8_pixel_t(0, 0, 0));
+            // Drawing Objects
+            auto palette = palette_linker.extract(palette_linker.get_names()[0]);
+            auto pattern = pattern_linker.extract(pattern_linker.get_names()[0]);
 
-            for(int x = 0; x < img.width(); ++x) {
-                auto p = static_cast<float>(x) / static_cast<float>(img.width());
-                auto index = static_cast<int>(std::ceil(p * 3.0f));
-                auto color = palette->colors[index];
+            pattern.attr("draw")(img, ctx, palette);
 
-                for(int y = 0; y < img.height(); ++y) {
-                    view(x, y) = color;
-                }
-            }
-
-            gil::png_write_view("test.png", gil::const_view(img));
+            img.write_png(dest);
         } catch(const po::error& e) {
             fmt::print("Error: {}\n{}", e.what(), desc);
         } catch(const py::error_already_set& e) {
