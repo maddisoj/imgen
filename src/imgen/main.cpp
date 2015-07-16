@@ -69,8 +69,15 @@ int main(int argc, char** argv) {
             imgen::context ctx(img);
 
             // Drawing Objects
-            auto palette = palette_linker.extract(palette_linker.get_names()[0]);
-            auto pattern = pattern_linker.extract(pattern_linker.get_names()[0]);
+            auto palettes = palette_linker.get_names();
+            auto palette = palette_linker.extract(
+                palettes[std::rand() % palettes.size()]
+            );
+
+            auto patterns = pattern_linker.get_names();
+            auto pattern = pattern_linker.extract(
+                patterns[std::rand() % patterns.size()]
+            );
 
             pattern->draw(img, ctx, *palette);
 
