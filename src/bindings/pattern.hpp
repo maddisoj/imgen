@@ -13,7 +13,7 @@ struct pattern_wrapper : imgen::pattern, py::wrapper<imgen::pattern> {
     void draw(const imgen::image& img, imgen::context& ctx,
               const imgen::palette& palette)
     {
-        this->get_override("draw")(img, ctx, palette);
+        this->get_override("draw")(img, ctx, boost::ref(palette));
     }
 };
 

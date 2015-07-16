@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
             auto palette = palette_linker.extract(palette_linker.get_names()[0]);
             auto pattern = pattern_linker.extract(pattern_linker.get_names()[0]);
 
-            pattern.attr("draw")(img, ctx, palette);
+            pattern->draw(img, ctx, *palette);
 
             img.write_png(dest);
         } catch(const po::error& e) {

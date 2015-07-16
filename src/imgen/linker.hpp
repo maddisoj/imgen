@@ -79,7 +79,7 @@ public:
      * Extracts a python class from a file in the link directory who's basename
      * is the given name.
      */
-    py::object extract(const std::string& name)
+    boost::shared_ptr<LinkBase> extract(const std::string& name)
     {
         if(!main_nmspc.has_key(name)) {
             main_nmspc[name] = py::import(name.c_str());
@@ -95,9 +95,9 @@ public:
             ));
         }
 
-        return py::eval(class_name.c_str(), main_nmspc);
+        auto py_class = py::eval(class_name.c_str(), main_nmspc);
 
-        // return py::extract<boost::shared_ptr<LinkBase> >(py_class)();
+        return py::extract<boost::shared_ptr<LinkBase> >(py_class)();
     }
 
     /**
