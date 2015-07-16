@@ -3,4 +3,4 @@ __pycache__
 build
 lib
 .ycm_extra_conf.*
-*.png
+/*.png
