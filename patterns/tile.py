@@ -1,11 +1,17 @@
 import imgen
+import random
 import math
 
 
 class Pattern(imgen.Pattern):
     def draw(self, image, context, palette):
-        num_tiles = 10
         num_colors = len(palette.colors)
+        num_tiles = random.randint(1, 10)
+
+        # Stop the colours from lining up on rows
+        if num_tiles % num_colors == 0:
+            num_tiles += 1
+
         width = image.width() / num_tiles
         height = image.height() / num_tiles
 
