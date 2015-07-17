@@ -18,7 +18,7 @@ class Palette(imgen.Palette):
         lightness = random.uniform(0.2, 0.8)
 
         # Clamp saturation to prevent washed out colours.
-        saturation = random.uniform(0.2, 0.8)
+        saturation = random.uniform(0.4, 1.0)
 
         for hue in hues:
             if hue < 0.0 or hue > 1.0:
