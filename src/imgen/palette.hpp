@@ -2,10 +2,12 @@
 #define IMGEN_PALETTE_HPP_
 
 #include "imgen/linker.hpp"
+#include "imgen/color.hpp"
 
 #include <boost/gil/gil_all.hpp>
 
 #include <vector>
+#include <algorithm>
 
 namespace gil = boost::gil;
 
@@ -16,9 +18,28 @@ namespace imgen {
  * provides methods for mixing between those colours.
  */
 struct palette {
-    std::vector<gil::rgb32f_pixel_t> colors;
+    typedef gil::rgb32f_pixel_t color_t;
 
-    virtual void blend() = 0;
+    std::vector<color_t> colors;
+
+    /**
+     * Linearly blends the colour at index `left` with the colour at index
+     * `right`. The proportion is clamped to [0, 1] with 0 being the `left`
+     * colour and 1 being the `right` colour.
+     */
+    virtual color_t blend(int left, int right, double proportion) const;
+
+    /**
+     * Gets the lightest colour in the palette, if the palette is empty returns
+     * white.
+     */
+    virtual color_t lightest() const;
+
+    /**
+     * Gets the darkest colour in the palette, if the palette is empty returns
+     * black.
+     */
+    virtual color_t darkest() const;
 };
 
 /**
@@ -27,7 +48,8 @@ struct palette {
 struct palette_linker : linker<palette> {
     using linker<palette>::linker;
 
-    const std::string python_class() {
+    const std::string python_class() const
+    {
         return "Palette";
     }
 };
