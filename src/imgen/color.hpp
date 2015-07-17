@@ -1,6 +1,8 @@
 #ifndef IMGEN_COLOR_HPP_
 #define IMGEN_COLOR_HPP_
 
+#include "imgen/hsl.hpp"
+
 #include <boost/gil/gil_all.hpp>
 #include <format.h>
 
@@ -13,7 +15,8 @@ namespace gil = boost::gil;
 namespace imgen {
 
 template<typename ColorBase>
-ColorBase random_color() {
+ColorBase random_color()
+{
     /**
      * Use bits8 to generate the random number so we can take advantage of
      * the modulus operator.
@@ -33,6 +36,18 @@ ColorBase random_color() {
     }
 
     return color;
+}
+
+template<typename ColorBase,
+         typename Channel = typename gil::channel_type<ColorBase>::type>
+Channel lightness(const ColorBase& color)
+{
+    // Not the best way but it works for now
+    gil::hsl32f_pixel_t hsl;
+
+    gil::color_convert(color, hsl);
+
+    return gil::channel_convert<Channel>(get_color(hsl, gil::lightness_t()));
 }
 
 } // namespace imgen
