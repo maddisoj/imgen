@@ -1,7 +1,0 @@
-#!/bin/sh
-
-output="/tmp/imgen.png"
-read w h <<< $(xrandr | grep '*' | awk '{print $1}' | awk -Fx '{print $1, $2}')
-
-./imgen -w $w -h $h -d $output
-feh --bg-fill $output
