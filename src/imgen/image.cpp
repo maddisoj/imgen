@@ -39,12 +39,37 @@ context::context(image& img) {
     );
 }
 
+void context::translate(double x, double y)
+{
+    cairo_translate(ctx.get(), x, y);
+}
+
+void context::scale(double x, double y)
+{
+    cairo_scale(ctx.get(), x, y);
+}
+
+void context::rotate(double angle)
+{
+    cairo_rotate(ctx.get(), angle);
+}
+
 void context::set_color(const gil::rgb32f_pixel_t& color)
 {
     cairo_set_source_rgb(ctx.get(), color[0], color[1], color[2]);
 }
 
-void context::rectangle(float x, float y, float width, float height)
+void context::arc(double x, double y, double radius, double start, double end)
+{
+    cairo_arc(ctx.get(), x, y, radius, start, end);
+}
+
+void context::circle(double x, double y, double radius)
+{
+    arc(x, y, radius, 0, 2 * M_PI);
+}
+
+void context::rectangle(double x, double y, double width, double height)
 {
     cairo_rectangle(ctx.get(), x, y, width, height);
 }

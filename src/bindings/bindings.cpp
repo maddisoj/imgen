@@ -30,6 +30,11 @@ BOOST_PYTHON_MODULE(imgen) {
 
     py::class_<imgen::context>("Context", py::no_init)
         .def("set_color", &imgen::context::set_color)
+        .def("translate", &imgen::context::translate)
+        .def("scale", &imgen::context::scale)
+        .def("rotate", &imgen::context::rotate)
+        .def("arc", &imgen::context::arc)
+        .def("circle", &imgen::context::circle)
         .def("rectangle", &imgen::context::rectangle)
         .def("stroke", &imgen::context::stroke)
         .def("fill", &imgen::context::fill);

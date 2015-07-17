@@ -8,14 +8,12 @@
 
 #include <string>
 #include <exception>
+#include <cmath>
 
 namespace fs = boost::filesystem;
 namespace gil = boost::gil;
 
 namespace imgen {
-
-// forward declaration
-class context;
 
 /**
  * Thin wrapper around cairo_surface_t which ensures the proper freeing of the
@@ -41,7 +39,16 @@ public:
     context(image& img);
 
     void set_color(const gil::rgb32f_pixel_t& color);
-    void rectangle(float x, float y, float width, float height);
+
+    // Transformation Functions
+    void translate(double x, double y);
+    void scale(double x, double y);
+    void rotate(double angle);
+
+    // Drawing Functions
+    void arc(double x, double y, double radius, double start, double end);
+    void circle(double x, double y, double radius);
+    void rectangle(double x, double y, double width, double height);
     void stroke();
     void fill();
 };
