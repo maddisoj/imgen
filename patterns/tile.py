@@ -1,25 +1,33 @@
 import imgen
 import random
-import math
 
 
 class Pattern(imgen.Pattern):
     def draw(self, image, context, palette):
         num_colors = len(palette.colors)
-        num_tiles = random.randint(1, 10)
+        cols = random.randint(1, 10)
 
-        # Stop the colours from lining up on rows
-        if num_tiles % num_colors == 0:
-            num_tiles += 1
+        if cols % num_colors == 0:
+            cols += 1
 
-        width = image.width() / num_tiles
-        height = image.height() / num_tiles
+        rows = cols
+        ratio = image.width() / image.height()
 
-        for tile in range(0, num_tiles ** 2):
-            x = max(0, width * (tile % num_tiles))
-            y = max(0, height * math.floor(tile / num_tiles))
-            color = palette.colors[tile % num_colors]
+        if ratio < 1.0:
+            cols = round(cols / ratio)
+        else:
+            rows = round(rows / ratio)
 
-            context.set_color(color)
-            context.rectangle(x, y, x + width, y + height)
-            context.fill()
+        width = image.width() / cols
+        height = image.height() / rows
+
+        for c in range(cols):
+            for r in range(rows):
+                x = width * c
+                y = height * r
+
+                color = palette.colors[(c * cols + r) % num_colors]
+
+                context.set_color(color)
+                context.rectangle(x, y, x + width, y + height)
+                context.fill()
