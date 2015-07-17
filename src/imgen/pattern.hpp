@@ -14,7 +14,7 @@ struct pattern {
 struct pattern_linker : linker<pattern> {
     using linker<pattern>::linker;
 
-    const std::string python_class()
+    const std::string python_class() const
     {
         return "Pattern";
     }

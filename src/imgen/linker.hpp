@@ -103,7 +103,7 @@ public:
     /**
      * The name of the python class to extract from a python file.
      */
-    virtual const std::string python_class() = 0;
+    virtual const std::string python_class() const = 0;
 };
 
 } //namespace imgen
