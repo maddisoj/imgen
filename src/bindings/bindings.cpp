@@ -41,7 +41,9 @@ BOOST_PYTHON_MODULE(imgen) {
 
     py::class_<ib::palette_wrapper, boost::noncopyable>("Palette")
         .def_readwrite("colors", &imgen::palette::colors)
-        .def("blend", py::pure_virtual(&imgen::palette::blend));
+        .def("blend", &imgen::palette::blend)
+        .def("lightest", &imgen::palette::lightest)
+        .def("darkest", &imgen::palette::darkest);
 
     py::class_<ib::pattern_wrapper, boost::noncopyable>("Pattern")
         .def("draw", py::pure_virtual(&imgen::pattern::draw));
