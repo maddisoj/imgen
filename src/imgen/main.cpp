@@ -36,7 +36,12 @@ int main(int argc, char** argv) {
         ("help", "Print the usage message")
         ("width,w", po::value<int>()->required(), "The generated image's width")
         ("height,h", po::value<int>()->required(), "The generated image's height")
-        ("dest,d", po::value<std::string>()->required(), "The output path for the image");
+        ("dest,d", po::value<std::string>()->required(),
+            "The output path for the image")
+        ("palette", po::value<std::string>(),
+            "The palette to use, if ommited a random palette is chosen.")
+        ("pattern", po::value<std::string>(),
+            "The pattern to use, if ommited a random pattern is chosen.");
 
     po::store(po::parse_command_line(argc, argv, desc), vm);
 
@@ -64,20 +69,30 @@ int main(int argc, char** argv) {
             imgen::palette_linker palette_linker(palettes_dir, main_nmspc);
             imgen::pattern_linker pattern_linker(patterns_dir, main_nmspc);
 
+            // Palette and Pattern selection
+            std::string palette_name, pattern_name;
+
+            if(vm.count("palette")) {
+                palette_name = vm["palette"].as<std::string>();
+            } else {
+                auto palettes = palette_linker.get_names();
+                palette_name = palettes[std::rand() % palettes.size()];
+            }
+
+            if(vm.count("pattern")) {
+                pattern_name = vm["pattern"].as<std::string>();
+            } else {
+                auto patterns = pattern_linker.get_names();
+                pattern_name = patterns[std::rand() % patterns.size()];
+            }
+
             // Image
             imgen::image img(width, height);
             imgen::context ctx(img);
 
             // Drawing Objects
-            auto palettes = palette_linker.get_names();
-            auto palette = palette_linker.extract(
-                palettes[std::rand() % palettes.size()]
-            );
-
-            auto patterns = pattern_linker.get_names();
-            auto pattern = pattern_linker.extract(
-                patterns[std::rand() % patterns.size()]
-            );
+            auto palette = palette_linker.extract(palette_name);
+            auto pattern = pattern_linker.extract(pattern_name);
 
             pattern->draw(img, ctx, *palette);
 
