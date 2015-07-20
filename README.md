@@ -4,6 +4,7 @@ Imgen utilizes patterns and palettes to procedurally generate unique images of
 an arbitrary size such as the ones below:
 
 ![tile-example](assets/tile-example.png)
+![circlefill-example](assets/circlefill-example.png)
 
 ## Example Use
 
