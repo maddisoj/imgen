@@ -51,6 +51,8 @@ public:
     void rectangle(double x, double y, double width, double height);
     void stroke();
     void fill();
+
+    boost::shared_ptr<cairo_t> data();
 };
 
 } // namespace imgen

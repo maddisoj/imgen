@@ -18,7 +18,8 @@ setup(
                 path.join(bindings_dir, './bindings.cpp'),
                 path.join(imgen_dir, './image.cpp'),
                 path.join(imgen_dir, './palette.cpp'),
-                path.join(imgen_dir, './hsl.cpp')
+                path.join(imgen_dir, './hsl.cpp'),
+                path.join(imgen_dir, './path.cpp'),
             ]
         )
     ]

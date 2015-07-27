@@ -1,8 +1,10 @@
 #include "bindings/colors.hpp"
 #include "bindings/pattern.hpp"
 #include "bindings/palette.hpp"
+#include "bindings/path.hpp"
 #include "imgen/color.hpp"
 #include "imgen/image.hpp"
+#include "imgen/point.hpp"
 
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
@@ -38,6 +40,16 @@ BOOST_PYTHON_MODULE(imgen) {
         .def("rectangle", &imgen::context::rectangle)
         .def("stroke", &imgen::context::stroke)
         .def("fill", &imgen::context::fill);
+
+    py::class_<imgen::point<double>>("Point", py::init<double, double>())
+        .def_readwrite("x", &imgen::point<double>::x)
+        .def_readwrite("y", &imgen::point<double>::y);
+
+    py::class_<ib::path_wrapper>("Path")
+        .def("move_to", &imgen::path::move_to)
+        .def("line_to", &imgen::path::line_to)
+        .def("curve_to", &ib::path_wrapper::curve_to)
+        .def("draw", &imgen::path::draw);
 
     py::class_<ib::palette_wrapper, boost::noncopyable>("Palette")
         .def_readwrite("colors", &imgen::palette::colors)

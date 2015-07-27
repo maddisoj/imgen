@@ -84,4 +84,8 @@ void context::fill()
     cairo_fill(ctx.get());
 }
 
+boost::shared_ptr<cairo_t> context::data() {
+    return ctx;
+}
+
 } // namespace imgen
