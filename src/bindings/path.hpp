@@ -10,6 +10,8 @@ namespace py = boost::python;
 namespace imgen { namespace bindings {
 
 struct path_wrapper : path {
+    using path::path;
+
     void curve_to(const py::tuple& points)
     {
         path::curve_to({

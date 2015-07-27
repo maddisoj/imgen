@@ -24,6 +24,9 @@ struct path {
     typedef point<double> point_t;
     typedef std::pair<operation_type, std::vector<point_t>> operation_t;
 
+    path() : line_width(1) {}
+    path(double width) : line_width(width) {}
+
     void move_to(point_t point)
     {
         add_operation(MOVE_TO, { std::move(point) });
@@ -51,8 +54,13 @@ struct path {
 
     void draw(context& ctx) const;
 
+    void set_line_width(double width) {
+        line_width = width;
+    }
+
 private:
     std::vector<operation_t> operations;
+    double line_width;
 
     void add_operation(operation_type op, std::vector<point_t> points);
 };

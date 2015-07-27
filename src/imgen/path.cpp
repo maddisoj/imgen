@@ -6,6 +6,7 @@ void path::draw(context& ctx) const {
     auto c = ctx.data().get();
 
     cairo_new_path(c);
+    cairo_set_line_width(c, line_width);
 
     for(auto op : operations) {
         auto op_type = op.first;
