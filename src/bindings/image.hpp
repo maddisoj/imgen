@@ -4,6 +4,7 @@
 #include "imgen/image.hpp"
 
 #include <boost/python.hpp>
+#include <boost/gil/gil_all.hpp>
 
 namespace py = boost::python;
 

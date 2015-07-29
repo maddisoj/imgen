@@ -84,13 +84,15 @@ void context::fill()
     cairo_fill(ctx.get());
 }
 
-void context::clear(const gil::rgb32f_pixel_t& color) {
+void context::clear(const gil::rgb32f_pixel_t& color)
+{
     set_color(color);
     rectangle(0, 0, img.width(), img.height());
     fill();
 }
 
-boost::shared_ptr<cairo_t> context::data() {
+boost::shared_ptr<cairo_t> context::data()
+{
     return ctx;
 }
 

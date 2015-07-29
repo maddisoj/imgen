@@ -52,7 +52,7 @@ public:
     void rectangle(double x, double y, double width, double height);
     void stroke();
     void fill();
-    void clear(const gil::rgb32f_pixel_t& color = gil::rgb32f_pixel_t(0, 0, 0));
+    void clear(const gil::rgb32f_pixel_t& color = {0, 0, 0});
 
     boost::shared_ptr<cairo_t> data();
 };
