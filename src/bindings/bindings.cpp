@@ -2,8 +2,8 @@
 #include "bindings/pattern.hpp"
 #include "bindings/palette.hpp"
 #include "bindings/path.hpp"
+#include "bindings/image.hpp"
 #include "imgen/color.hpp"
-#include "imgen/image.hpp"
 #include "imgen/point.hpp"
 
 #include <boost/python.hpp>
@@ -39,7 +39,8 @@ BOOST_PYTHON_MODULE(imgen) {
         .def("circle", &imgen::context::circle)
         .def("rectangle", &imgen::context::rectangle)
         .def("stroke", &imgen::context::stroke)
-        .def("fill", &imgen::context::fill);
+        .def("fill", &imgen::context::fill)
+        .def("clear", &imgen::context::clear, ib::context_clear_overloads());
 
     py::class_<imgen::point<double>>("Point", py::init<double, double>())
         .def_readwrite("x", &imgen::point<double>::x)

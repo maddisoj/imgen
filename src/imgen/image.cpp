@@ -33,7 +33,7 @@ boost::shared_ptr<cairo_surface_t> image::data()
     return boost::shared_ptr<cairo_surface_t>(surface);
 }
 
-context::context(image& img) {
+context::context(image& img) : img(img) {
     ctx = boost::shared_ptr<cairo_t>(
         cairo_create(img.data().get()), cairo_destroy
     );
@@ -82,6 +82,12 @@ void context::stroke()
 void context::fill()
 {
     cairo_fill(ctx.get());
+}
+
+void context::clear(const gil::rgb32f_pixel_t& color) {
+    set_color(color);
+    rectangle(0, 0, img.width(), img.height());
+    fill();
 }
 
 boost::shared_ptr<cairo_t> context::data() {
