@@ -52,7 +52,8 @@ struct path {
         ));
     }
 
-    void draw(context& ctx) const;
+    void fill(context& ctx, bool close = true) const;
+    void stroke(context& ctx, bool close = true) const;
 
     void set_line_width(double width) {
         line_width = width;
@@ -63,6 +64,7 @@ private:
     double line_width;
 
     void add_operation(operation_type op, std::vector<point_t> points);
+    void draw(context& ctx, bool close) const;
 };
 
 } // namespace imgen

@@ -2,17 +2,18 @@
 
 namespace imgen {
 
-void path::draw(context& ctx) const {
+void path::draw(context& ctx, bool close) const
+{
     auto c = ctx.data().get();
 
     cairo_new_path(c);
     cairo_set_line_width(c, line_width);
 
     for(auto op : operations) {
-        auto op_type = op.first;
+        auto type = op.first;
         auto points = op.second;
 
-        switch(op_type) {
+        switch(type) {
             case MOVE_TO:
                 cairo_move_to(c, points[0].x, points[0].y);
                 break;
@@ -29,12 +30,14 @@ void path::draw(context& ctx) const {
 
             default:
                 throw new std::logic_error(fmt::format(
-                    "Unimplemented path operation: {}", op_type
+                    "Unimplemented path operation: {}", type
                 ));
         }
     }
 
-    cairo_close_path(c);
+    if(close) {
+        cairo_close_path(c);
+    }
 }
 
 void path::add_operation(operation_type op, std::vector<point_t> points)

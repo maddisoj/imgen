@@ -6,8 +6,9 @@
 
 #include <boost/gil/gil_all.hpp>
 
-#include <vector>
 #include <algorithm>
+#include <cstdlib>
+#include <vector>
 
 namespace gil = boost::gil;
 
@@ -40,6 +41,12 @@ struct palette {
      * black.
      */
     virtual color_t darkest() const;
+
+    /**
+     * Gets a random color from this palette. If the palette is empty returns
+     * a random color.
+     */
+    color_t random_color() const;
 };
 
 /**

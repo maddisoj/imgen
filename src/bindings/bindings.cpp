@@ -58,7 +58,8 @@ BOOST_PYTHON_MODULE(imgen) {
         .def_readwrite("colors", &imgen::palette::colors)
         .def("blend", &imgen::palette::blend)
         .def("lightest", &imgen::palette::lightest)
-        .def("darkest", &imgen::palette::darkest);
+        .def("darkest", &imgen::palette::darkest)
+        .def("random_color", &imgen::palette::random_color);
 
     py::class_<ib::pattern_wrapper, boost::noncopyable>("Pattern")
         .def("draw", py::pure_virtual(&imgen::pattern::draw));

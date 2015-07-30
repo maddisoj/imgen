@@ -42,6 +42,17 @@ struct palette_wrapper : palette, py::wrapper<palette> {
             return palette::darkest();
         }
     }
+
+    palette::color_t random_color() const
+    {
+        auto o = this->get_override("random_color");
+
+        if(o) {
+            return o();
+        } else {
+            return palette::random_color();
+        }
+    }
 };
 
 } } // namespace imgen::bindings

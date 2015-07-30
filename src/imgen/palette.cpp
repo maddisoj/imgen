@@ -51,4 +51,13 @@ palette::color_t palette::darkest() const
 
 }
 
+palette::color_t palette::random_color() const
+{
+    if(colors.empty()) {
+        return imgen::random_color<color_t>();
+    }
+
+    return colors[std::rand() % colors.size()];
+}
+
 } // namespace imgen
