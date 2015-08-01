@@ -9,18 +9,22 @@ namespace py = boost::python;
 
 namespace imgen { namespace bindings {
 
-struct path_wrapper : path {
-    using path::path;
+void path_curve_to(path& p, const py::tuple& points)
+{
+    p.curve_to({
+        py::extract<path::point_t>(points[0]),
+        py::extract<path::point_t>(points[1]),
+        py::extract<path::point_t>(points[2]),
+    });
+}
 
-    void curve_to(const py::tuple& points)
-    {
-        path::curve_to({
-            py::extract<path::point_t>(points[0]),
-            py::extract<path::point_t>(points[1]),
-            py::extract<path::point_t>(points[2]),
-        });
-    }
-};
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
+    path_fill_overloads, fill, 1, 2
+);
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(
+    path_stroke_overloads, stroke, 1, 2
+);
 
 } } // namespace imgen::bindings
 

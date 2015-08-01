@@ -52,8 +52,17 @@ struct path {
         ));
     }
 
-    void fill(context& ctx, bool close = true) const;
-    void stroke(context& ctx, bool close = true) const;
+    void fill(context& ctx, bool close = true) const
+    {
+        draw(ctx, close);
+        ctx.fill();
+    }
+
+    void stroke(context& ctx, bool close = true) const
+    {
+        draw(ctx, close);
+        ctx.stroke();
+    }
 
     void set_line_width(double width) {
         line_width = width;

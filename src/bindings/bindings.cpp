@@ -46,13 +46,14 @@ BOOST_PYTHON_MODULE(imgen) {
         .def_readwrite("x", &imgen::point<double>::x)
         .def_readwrite("y", &imgen::point<double>::y);
 
-    py::class_<ib::path_wrapper>("Path")
+    py::class_<imgen::path>("Path")
         .def(py::init<double>())
         .def("move_to", &imgen::path::move_to)
         .def("line_to", &imgen::path::line_to)
-        .def("curve_to", &ib::path_wrapper::curve_to)
+        .def("curve_to", &ib::path_curve_to)
         .def("set_line_width", &imgen::path::set_line_width)
-        .def("draw", &imgen::path::draw);
+        .def("fill", &imgen::path::fill, ib::path_fill_overloads())
+        .def("stroke", &imgen::path::stroke, ib::path_stroke_overloads());
 
     py::class_<ib::palette_wrapper, boost::noncopyable>("Palette")
         .def_readwrite("colors", &imgen::palette::colors)
