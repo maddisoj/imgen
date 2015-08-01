@@ -29,9 +29,7 @@ class Pattern(imgen.Pattern):
         colors = list(palette.colors)
         bg_color = colors[random.randint(0, len(colors) - 1)]
 
-        context.set_color(bg_color)
-        context.rectangle(0, 0, image.width(), image.height())
-        context.fill()
+        context.clear(bg_color)
         colors.remove(bg_color)
 
         edges = [
@@ -51,16 +49,12 @@ class Pattern(imgen.Pattern):
 
         for i in range(random.randint(100, 1000)):
             point, circle_distance = random_point(image, circles)
-            color = random.randint(0, len(colors) - 1)
-            edge_distance = sys.float_info.max
-
-            for edge in edges:
-                edge_distance = min(edge_distance, imgen.distance(point, edge))
-
+            color = colors[random.randint(0, len(colors) - 1)]
+            edge_distance = min(imgen.distance(point, edge) for edge in edges)
             max_radius = min(edge_distance, circle_distance)
             radius = random.uniform(0.8, 1.0) * max_radius
 
-            context.set_color(colors[color])
+            context.set_color(color)
             context.circle(point.x, point.y, radius)
             context.fill()
 
