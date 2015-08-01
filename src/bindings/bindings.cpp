@@ -44,9 +44,9 @@ BOOST_PYTHON_MODULE(imgen) {
         .def("fill", &imgen::context::fill)
         .def("clear", &imgen::context::clear, ib::context_clear_overloads());
 
-    py::class_<imgen::point<double>>("Point", py::init<double, double>())
-        .def_readwrite("x", &imgen::point<double>::x)
-        .def_readwrite("y", &imgen::point<double>::y);
+    py::class_<imgen::point_t>("Point", py::init<double, double>())
+        .def_readwrite("x", &imgen::point_t::x)
+        .def_readwrite("y", &imgen::point_t::y);
 
     py::class_<imgen::path>("Path")
         .def(py::init<double>())

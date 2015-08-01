@@ -12,9 +12,9 @@ namespace imgen { namespace bindings {
 void path_curve_to(path& p, const py::tuple& points)
 {
     p.curve_to({
-        py::extract<path::point_t>(points[0]),
-        py::extract<path::point_t>(points[1]),
-        py::extract<path::point_t>(points[2]),
+        py::extract<point_t>(points[0]),
+        py::extract<point_t>(points[1]),
+        py::extract<point_t>(points[2]),
     });
 }
 
