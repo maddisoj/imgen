@@ -31,6 +31,8 @@ BOOST_PYTHON_MODULE(imgen) {
         .def("height", &imgen::image::height);
 
     py::class_<imgen::context>("Context", py::no_init)
+        .def("set_color", &ib::context_set_color_tuple)
+        .def("set_color", &ib::context_set_color_channels)
         .def("set_color", &imgen::context::set_color)
         .def("translate", &imgen::context::translate)
         .def("scale", &imgen::context::scale)
