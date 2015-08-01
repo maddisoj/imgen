@@ -13,6 +13,8 @@ struct point {
         x(std::move(x)), y(std::move(y)) {}
 };
 
+typedef point<double> point_t;
+
 } // namespace imgen
 
 #endif // IMGEN_POINT_HPP_

@@ -21,7 +21,6 @@ struct path {
         CURVE_TO = CAIRO_PATH_CURVE_TO,
     };
 
-    typedef point<double> point_t;
     typedef std::pair<operation_type, std::vector<point_t>> operation_t;
 
     path() : line_width(1) {}
