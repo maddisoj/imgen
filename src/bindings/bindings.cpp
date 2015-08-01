@@ -3,8 +3,8 @@
 #include "bindings/palette.hpp"
 #include "bindings/path.hpp"
 #include "bindings/image.hpp"
+#include "bindings/point.hpp"
 #include "imgen/color.hpp"
-#include "imgen/point.hpp"
 
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
@@ -46,7 +46,17 @@ BOOST_PYTHON_MODULE(imgen) {
 
     py::class_<imgen::point_t>("Point", py::init<double, double>())
         .def_readwrite("x", &imgen::point_t::x)
-        .def_readwrite("y", &imgen::point_t::y);
+        .def_readwrite("y", &imgen::point_t::y)
+        .def("length", &imgen::point_t::length)
+        .def(py::self + py::self)
+        .def(py::self - py::self)
+        .def(py::self * imgen::point_t::coord_t())
+        .def(py::self / imgen::point_t::coord_t());
+
+    py::def("dot_product", &imgen::dot_product<imgen::point_t::coord_t>);
+    py::def("normal", &imgen::normal<imgen::point_t::coord_t>);
+    py::def("distance", ib::distance_point_point);
+    py::def("distance", &ib::distance_point_line);
 
     py::class_<imgen::path>("Path")
         .def(py::init<double>())
