@@ -1,26 +1,17 @@
 import imgen
 import sys
-import math
 import random
-
-
-def eucludean_distance(a, b):
-    dx = a[0] - b[0]
-    dy = a[1] - b[1]
-
-    return math.sqrt(dx ** 2 + dy ** 2)
 
 
 def random_point(image, circles):
     while True:
-        x = random.uniform(0, image.width())
-        y = random.uniform(0, image.height())
+        point = imgen.Point(random.uniform(0, image.width()),
+                            random.uniform(0, image.height()))
         # Ensure that any distance is smaller than the starting distance
         closest_distance = sys.float_info.max
 
         for circle in circles:
-            distance = eucludean_distance((circle["x"], circle["y"]),
-                                          (x, y))
+            distance = imgen.distance(circle["center"], point)
 
             if distance < circle["radius"]:
                 closest_distance = sys.float_info.max
@@ -29,7 +20,7 @@ def random_point(image, circles):
             elif (distance - circle["radius"]) < closest_distance:
                 closest_distance = distance - circle["radius"]
         else:
-            return x, y, closest_distance
+            return point, closest_distance
 
 
 class Pattern(imgen.Pattern):
@@ -44,36 +35,36 @@ class Pattern(imgen.Pattern):
         colors.remove(bg_color)
 
         edges = [
-            (0, 0, 0, image.height()),
-            (0, 0, image.width(), 0),
-            (image.width(), 0, image.width(), image.height()),
-            (0, image.height(), image.width(), image.height())
+            # Top
+            (imgen.Point(0, 0),
+             imgen.Point(image.width(), 0)),
+            # Bottom
+            (imgen.Point(0, image.height()),
+             imgen.Point(image.width(), image.height())),
+            # Left
+            (imgen.Point(0, 0),
+             imgen.Point(0, image.height())),
+            # Right
+            (imgen.Point(image.width(), 0),
+             imgen.Point(image.width(), image.height())),
         ]
 
         for i in range(random.randint(100, 1000)):
-            x, y, circle_distance = random_point(image, circles)
+            point, circle_distance = random_point(image, circles)
             color = random.randint(0, len(colors) - 1)
             edge_distance = sys.float_info.max
 
             for edge in edges:
-                ax, ay = (x - edge[0], y - edge[1])
-                bx, by = (edge[2] - edge[0], edge[1] - edge[3])
-                dot = ax * bx + ay * by
-                t = dot / (bx ** 2 + by ** 2)
-                cx, cy = (edge[0] + t * bx, edge[1] + t * by)
-
-                edge_distance = min(edge_distance,
-                                    eucludean_distance((x, y), (cx, cy)))
+                edge_distance = min(edge_distance, imgen.distance(point, edge))
 
             max_radius = min(edge_distance, circle_distance)
             radius = random.uniform(0.8, 1.0) * max_radius
 
             context.set_color(colors[color])
-            context.circle(x, y, radius)
+            context.circle(point.x, point.y, radius)
             context.fill()
 
             circles.append({
-                "x": x,
-                "y": y,
+                "center": point,
                 "radius": radius
             })
