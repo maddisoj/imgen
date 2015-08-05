@@ -5,6 +5,7 @@ an arbitrary size such as the ones below:
 
 ![tile-example](assets/tile-example.png)
 ![circlefill-example](assets/circlefill-example.png)
+![triangles-example](assets/triangles-example.png)
 
 ## Example Use
 
