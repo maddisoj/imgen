@@ -38,16 +38,27 @@ ColorBase random_color()
     return color;
 }
 
-template<typename ColorBase,
-         typename Channel = typename gil::channel_type<ColorBase>::type>
-Channel lightness(const ColorBase& color)
+/**
+ * Linearly blends the colour `left` with the colour `right`. The proportion is
+ * clamped to [0, 1] with 0 being the `left` colour and 1 being the `right`
+ * colour.
+ */
+template<typename ColorBase>
+ColorBase blend(const ColorBase& left, const ColorBase& right, double proportion)
 {
-    // Not the best way but it works for now
-    gil::hsl32f_pixel_t hsl;
+    if(proportion >= 1.0) {
+        return right;
+    } else if(proportion <= 0.0) {
+        return left;
+    } else {
+        ColorBase color;
 
-    gil::color_convert(color, hsl);
+        for(auto i = 0; i < gil::num_channels<ColorBase>(); ++i) {
+            color[i] = left[i] + proportion * (right[i] - left[i]);
+        }
 
-    return gil::channel_convert<Channel>(get_color(hsl, gil::lightness_t()));
+        return color;
+    }
 }
 
 } // namespace imgen

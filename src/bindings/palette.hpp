@@ -2,58 +2,51 @@
 #define BINDINGS_PALETTE_HPP_
 
 #include "imgen/palette.hpp"
+#include "bindings/util.hpp"
 
 #include <boost/python.hpp>
+
+#include <vector>
 
 namespace py = boost::python;
 
 namespace imgen { namespace bindings {
 
 struct palette_wrapper : palette, py::wrapper<palette> {
-    palette::color_t blend(int left, int right, double proportion) const
-    {
-        auto o = this->get_override("blend");
+    using palette::color_t;
 
-        if(o) {
-            return o(left, right, proportion);
-        } else {
-            return palette::blend(left, right, proportion);
-        }
+    std::vector<color_t> generate()
+    {
+        return list_to_vector<color_t>(generate(py::dict{}));
     }
 
-    palette::color_t lightest() const
+    std::vector<color_t> generate(int amount)
     {
-        auto o = this->get_override("lightest");
+        py::dict kwargs;
 
-        if(o) {
-            return o();
-        } else {
-            return palette::lightest();
-        }
+        kwargs["amount"] = amount;
+
+        return list_to_vector<color_t>(generate(kwargs));
     }
 
-    palette::color_t darkest() const
+    std::vector<color_t> generate(int min, int max)
     {
-        auto o = this->get_override("darkest");
+        py::dict kwargs;
 
-        if(o) {
-            return o();
-        } else {
-            return palette::darkest();
-        }
+        kwargs["lower"] = min;
+        kwargs["upper"] = max;
+
+        return list_to_vector<color_t>(generate(kwargs));
     }
 
-    palette::color_t random_color() const
+    py::list generate(py::dict kwargs)
     {
-        auto o = this->get_override("random_color");
-
-        if(o) {
-            return o();
-        } else {
-            return palette::random_color();
-        }
+        return this->get_override("generate")(**kwargs);
     }
 };
+
+py::list (palette_wrapper::*palette_generate)(py::dict)
+    = &palette_wrapper::generate;
 
 } } // namespace imgen::bindings
 

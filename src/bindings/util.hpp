@@ -1,19 +1,26 @@
 #ifndef BINDINGS_UTIL_HPP_
 #define BINDINGS_UTIL_HPP_
 
-#include <string>
-#include <sstream>
+#include <boost/python.hpp>
+#include <boost/python/stl_iterator.hpp>
+
+#include <vector>
+
+namespace py = boost::python;
 
 namespace imgen { namespace bindings {
 
-template<class C>
-inline std::string print_wrapper(const C& obj)
+template<typename T>
+inline py::list vector_to_list(const std::vector<T>& v)
 {
-    std::ostringstream os;
+    return py::list(py::iterator<std::vector<T> >()(v));
+}
 
-    os << obj;
-
-    return os.str();
+template<typename T>
+inline std::vector<T> list_to_vector(const py::list& list)
+{
+    return std::vector<T>(py::stl_input_iterator<T>(list),
+                          py::stl_input_iterator<T>());
 }
 
 } } // namespace imgen::bindings

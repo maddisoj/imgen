@@ -21,32 +21,12 @@ namespace imgen {
 struct palette {
     typedef gil::rgb32f_pixel_t color_t;
 
-    std::vector<color_t> colors;
-
     /**
-     * Linearly blends the colour at index `left` with the colour at index
-     * `right`. The proportion is clamped to [0, 1] with 0 being the `left`
-     * colour and 1 being the `right` colour.
+     * Request a collection of colors from this palette.
      */
-    virtual color_t blend(int left, int right, double proportion) const;
-
-    /**
-     * Gets the lightest colour in the palette, if the palette is empty returns
-     * white.
-     */
-    virtual color_t lightest() const;
-
-    /**
-     * Gets the darkest colour in the palette, if the palette is empty returns
-     * black.
-     */
-    virtual color_t darkest() const;
-
-    /**
-     * Gets a random color from this palette. If the palette is empty returns
-     * a random color.
-     */
-    color_t random_color() const;
+    virtual std::vector<color_t> generate() = 0;
+    virtual std::vector<color_t> generate(int amount) = 0;
+    virtual std::vector<color_t> generate(int min, int max) = 0;
 };
 
 /**

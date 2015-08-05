@@ -1,6 +1,7 @@
 #ifndef BINDINGS_COLORS_HPP_
 #define BINDINGS_COLORS_HPP_
 
+#include "imgen/palette.hpp"
 #include "imgen/hsl.hpp"
 
 #include <boost/python.hpp>
