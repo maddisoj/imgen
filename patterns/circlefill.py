@@ -23,10 +23,11 @@ def random_point(image, circles):
             return point, closest_distance
 
 
+# Fill most of the image with non-overlapping circles of variant radiuses.
 class Pattern(imgen.Pattern):
     def draw(self, image, context, palette):
         circles = []
-        colors = list(palette.colors)
+        colors = palette.generate(lower=2)
         bg_color = colors[random.randint(0, len(colors) - 1)]
 
         context.clear(bg_color)
@@ -47,7 +48,7 @@ class Pattern(imgen.Pattern):
              imgen.Point(image.width(), image.height())),
         ]
 
-        for i in range(random.randint(100, 1000)):
+        for i in range(random.randint(200, 1000)):
             point, circle_distance = random_point(image, circles)
             color = colors[random.randint(0, len(colors) - 1)]
             edge_distance = min(imgen.distance(point, edge) for edge in edges)

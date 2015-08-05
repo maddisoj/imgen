@@ -4,7 +4,8 @@ import random
 
 class Pattern(imgen.Pattern):
     def draw(self, image, context, palette):
-        num_colors = len(palette.colors)
+        colors = palette.generate(lower=2)
+        num_colors = len(colors)
         cols = random.randint(1, 10)
 
         if cols % num_colors == 0:
@@ -26,7 +27,7 @@ class Pattern(imgen.Pattern):
                 x = width * c
                 y = height * r
 
-                color = palette.colors[(c * cols + r) % num_colors]
+                color = colors[(c * cols + r) % num_colors]
 
                 context.set_color(color)
                 context.rectangle(x, y, x + width, y + height)
