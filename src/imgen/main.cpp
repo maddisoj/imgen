@@ -118,7 +118,8 @@ int main(int argc, char** argv)
             pattern->draw(img, ctx, *palette);
 
             img.write_png(dest);
-            fmt::print("Seed: {}", seed);
+            fmt::print("Palette: {}\nPattern: {}\nSize: {}x{}\nSeed: {}",
+                       palette_name, pattern_name, width, height, seed);
         } catch(const po::error& e) {
             fmt::print("Error: {}\n{}", e.what(), desc);
         } catch(const py::error_already_set& e) {

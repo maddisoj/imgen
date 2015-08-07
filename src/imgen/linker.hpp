@@ -87,8 +87,6 @@ public:
 
         auto class_name = name + "." + python_class() + "()";
 
-        fmt::print("{}\n", class_name);
-
         if(!main_nmspc[name].attr(python_class().c_str())) {
             throw new std::logic_error(fmt::format(
                 "{} has no class \"{}\"", name, python_class()
