@@ -16,6 +16,7 @@
 #include <format.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cstdlib>
 #include <iostream>
 #include <iterator>
@@ -26,9 +27,21 @@ namespace gil = boost::gil;
 namespace py  = boost::python;
 namespace fs  = boost::filesystem;
 
-int main(int argc, char** argv) {
-    std::srand(std::time(0));
+/**
+ * Sets the python and C++ random number generator seed.
+ */
+void set_seed(py::dict& main_nmspc, unsigned seed)
+{
+    if(!main_nmspc.has_key("random")) {
+        main_nmspc["random"] = py::import("random");
+    }
 
+    main_nmspc["random"].attr("seed")(seed);
+    std::srand(seed);
+}
+
+int main(int argc, char** argv)
+{
     po::options_description desc("Options");
     po::variables_map vm;
 
@@ -41,7 +54,10 @@ int main(int argc, char** argv) {
         ("palette", po::value<std::string>(),
             "The palette to use, if ommited a random palette is chosen.")
         ("pattern", po::value<std::string>(),
-            "The pattern to use, if ommited a random pattern is chosen.");
+            "The pattern to use, if ommited a random pattern is chosen.")
+        ("seed", po::value<unsigned>(),
+            "The seed for the random number generator. If ommited the current "
+            "unix time is used.");
 
     po::store(po::parse_command_line(argc, argv, desc), vm);
 
@@ -53,6 +69,8 @@ int main(int argc, char** argv) {
             auto dest = vm["dest"].as<std::string>();
             auto width = vm["width"].as<int>();
             auto height = vm["height"].as<int>();
+            auto seed = vm.count("seed") ? vm["seed"].as<unsigned>()
+                                         : std::time(nullptr);
 
             Py_Initialize();
 
@@ -64,6 +82,9 @@ int main(int argc, char** argv) {
             auto exec_dir = fs::canonical(fs::system_complete(argv[0])).parent_path();
             auto palettes_dir = exec_dir / "palettes";
             auto patterns_dir = exec_dir / "patterns";
+
+            // Set the seed for this generation.
+            set_seed(main_nmspc, seed);
 
             // Linkers
             imgen::palette_linker palette_linker(palettes_dir, main_nmspc);
@@ -97,6 +118,7 @@ int main(int argc, char** argv) {
             pattern->draw(img, ctx, *palette);
 
             img.write_png(dest);
+            fmt::print("Seed: {}", seed);
         } catch(const po::error& e) {
             fmt::print("Error: {}\n{}", e.what(), desc);
         } catch(const py::error_already_set& e) {
