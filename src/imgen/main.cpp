@@ -6,6 +6,7 @@
 #include "imgen/image.hpp"
 #include "imgen/palette.hpp"
 #include "imgen/pattern.hpp"
+#include "imgen/imgen.hpp"
 
 #include <Python.h>
 #include <boost/filesystem.hpp>
@@ -26,19 +27,6 @@ namespace po  = boost::program_options;
 namespace gil = boost::gil;
 namespace py  = boost::python;
 namespace fs  = boost::filesystem;
-
-/**
- * Sets the python and C++ random number generator seed.
- */
-void set_seed(py::dict& main_nmspc, unsigned seed)
-{
-    if(!main_nmspc.has_key("random")) {
-        main_nmspc["random"] = py::import("random");
-    }
-
-    main_nmspc["random"].attr("seed")(seed);
-    std::srand(seed);
-}
 
 int main(int argc, char** argv)
 {
@@ -66,29 +54,17 @@ int main(int argc, char** argv)
     } else {
         try {
             po::notify(vm);
+
             auto dest = vm["dest"].as<std::string>();
             auto width = vm["width"].as<int>();
             auto height = vm["height"].as<int>();
             auto seed = vm.count("seed") ? vm["seed"].as<unsigned>()
                                          : std::time(nullptr);
-
-            Py_Initialize();
-
-            // Python Environment
-            auto main_module = py::import("__main__");
-            py::dict main_nmspc = py::extract<py::dict>(main_module.attr("__dict__"));
-
-            // Directories
             auto exec_dir = fs::canonical(fs::system_complete(argv[0])).parent_path();
-            auto palettes_dir = exec_dir / "palettes";
-            auto patterns_dir = exec_dir / "patterns";
+            imgen::imgen prog(exec_dir);
 
             // Set the seed for this generation.
-            set_seed(main_nmspc, seed);
-
-            // Linkers
-            imgen::palette_linker palette_linker(palettes_dir, main_nmspc);
-            imgen::pattern_linker pattern_linker(patterns_dir, main_nmspc);
+            prog.set_seed(seed);
 
             // Palette and Pattern selection
             std::string palette_name, pattern_name;
@@ -96,28 +72,19 @@ int main(int argc, char** argv)
             if(vm.count("palette")) {
                 palette_name = vm["palette"].as<std::string>();
             } else {
-                auto palettes = palette_linker.get_names();
-                palette_name = palettes[std::rand() % palettes.size()];
+                palette_name = prog.random_palette();
             }
 
             if(vm.count("pattern")) {
                 pattern_name = vm["pattern"].as<std::string>();
             } else {
-                auto patterns = pattern_linker.get_names();
-                pattern_name = patterns[std::rand() % patterns.size()];
+                pattern_name = prog.random_pattern();
             }
 
-            // Image
-            imgen::image img(width, height);
-            imgen::context ctx(img);
+            prog.set_palette(palette_name);
+            prog.set_pattern(pattern_name);
+            prog.generate(dest, width, height);
 
-            // Drawing Objects
-            auto palette = palette_linker.extract(palette_name);
-            auto pattern = pattern_linker.extract(pattern_name);
-
-            pattern->draw(img, ctx, *palette);
-
-            img.write_png(dest);
             fmt::print("Palette: {}\nPattern: {}\nSize: {}x{}\nSeed: {}",
                        palette_name, pattern_name, width, height, seed);
         } catch(const po::error& e) {

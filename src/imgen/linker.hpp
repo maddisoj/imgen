@@ -22,36 +22,13 @@ namespace imgen {
 template<typename LinkBase>
 class linker {
     // The directory the linker looks in for python files
-    const fs::path link_dir;
-
-    // The main python namespace for importing the file
-    py::dict main_nmspc;
+    fs::path link_dir;
 
 public:
-    /**
-     * Attempts to add the linker's directory to the system path
-     */
-    linker(const fs::path& link_dir, py::dict& main_nmspc)
-        : link_dir(link_dir), main_nmspc(main_nmspc)
+    linker(fs::path dir) : link_dir(std::move(dir))
     {
         if(!fs::is_directory(link_dir)) {
             throw std::invalid_argument("Link path is not a directory");
-        }
-
-        if(!main_nmspc.has_key("sys")) {
-            main_nmspc["sys"] = py::import("sys");
-        }
-
-        main_nmspc["sys"].attr("path").attr("append")(link_dir.string());
-    }
-
-    /**
-     * Removes the linker's directory from the system path.
-     */
-    ~linker()
-    {
-        if(main_nmspc.has_key("sys")) {
-            main_nmspc["sys"].attr("path").attr("remove")(link_dir.string());
         }
     }
 
@@ -79,22 +56,36 @@ public:
      * Extracts a python class from a file in the link directory who's basename
      * is the given name.
      */
-    boost::shared_ptr<LinkBase> extract(const std::string& name)
+    boost::shared_ptr<LinkBase> extract(const std::string& name, py::dict& nmspc)
     {
-        if(!main_nmspc.has_key(name)) {
-            main_nmspc[name] = py::import(name.c_str());
+        // We need to add the link directory to the path so that python can see
+        // the scripts inside that directory.
+        if(!nmspc.has_key("sys")) {
+            nmspc["sys"] = py::import("sys");
+        }
+
+        nmspc["sys"].attr("path").attr("append")(link_dir.string());
+
+        // Next we attempt to import the script into the namespace
+        if(!nmspc.has_key(name)) {
+            nmspc[name] = py::import(name.c_str());
         }
 
         auto class_name = name + "." + python_class() + "()";
 
-        if(!main_nmspc[name].attr(python_class().c_str())) {
+        if(!nmspc[name].attr(python_class().c_str())) {
             throw new std::logic_error(fmt::format(
                 "{} has no class \"{}\"", name, python_class()
             ));
         }
 
-        auto py_class = py::eval(class_name.c_str(), main_nmspc);
+        // If we have successfully imported the script then we can construct the
+        // needed class.
+        auto py_class = py::eval(class_name.c_str(), nmspc);
 
+        nmspc["sys"].attr("path").attr("remove")(link_dir.string());
+
+        // Extract the C++ object from the python object and return that.
         return py::extract<boost::shared_ptr<LinkBase> >(py_class)();
     }
 
