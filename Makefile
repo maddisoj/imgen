@@ -2,6 +2,7 @@ CC = g++
 SRCDIR := src/imgen
 PYSETUP := src/bindings/setup.py
 BUILDDIR := build
+MODULEDIR := python
 TARGET := imgen
 SRC := $(shell find $(SRCDIR) -type f -name *.cpp)
 OBJ := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRC:.cpp=.o))
@@ -22,11 +23,9 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 
 bindings:
 	@python $(PYSETUP) build
-
-bindings-install: bindings
-	@sudo python $(PYSETUP) install
+	@python $(PYSETUP) install --install-lib $(MODULEDIR)
 
 clean:
-	rm -r "$(BUILDDIR)" "$(TARGET)" &> /dev/null
+	rm -rf "$(BUILDDIR)" "$(TARGET)" "$(MODULEDIR)"
 
 .PHONY: bindings bindings-install clean
