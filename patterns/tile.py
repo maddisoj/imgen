@@ -4,7 +4,7 @@ import random
 
 class Pattern(imgen.Pattern):
     def draw(self, image, context, palette):
-        colors = palette.generate(lower=2)
+        colors = palette.generate(at_least=2)
         num_colors = len(colors)
         cols = random.randint(1, 10)
 

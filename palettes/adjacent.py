@@ -9,9 +9,9 @@ import random
 class Palette(imgen.Palette):
     def generate(self, **kwargs):
         colors = []
-        lower = kwargs['lower'] if 'lower' in kwargs else 1
-        upper = kwargs['upper'] if 'upper' in kwargs else 10
-        amount = kwargs['amount'] if 'amount' in kwargs else random.randint(lower, upper)
+        lower = kwargs['at_least'] if 'at_least' in kwargs else 1
+        upper = kwargs['at_most'] if 'at_most' in kwargs else 10
+        amount = kwargs['exactly'] if 'exactly' in kwargs else random.randint(lower, upper)
         base = random.uniform(0.0, 1.0)
         lightness = random.uniform(0.2, 0.8)
         saturation = random.uniform(0.4, 1.0)

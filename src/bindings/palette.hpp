@@ -24,7 +24,7 @@ struct palette_wrapper : palette, py::wrapper<palette> {
     {
         py::dict kwargs;
 
-        kwargs["amount"] = amount;
+        kwargs["exactly"] = amount;
 
         return list_to_vector<color_t>(generate(kwargs));
     }
@@ -33,8 +33,8 @@ struct palette_wrapper : palette, py::wrapper<palette> {
     {
         py::dict kwargs;
 
-        kwargs["lower"] = min;
-        kwargs["upper"] = max;
+        kwargs["at_least"] = min;
+        kwargs["at_most"] = max;
 
         return list_to_vector<color_t>(generate(kwargs));
     }

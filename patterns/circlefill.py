@@ -27,7 +27,7 @@ def random_point(image, circles):
 class Pattern(imgen.Pattern):
     def draw(self, image, context, palette):
         circles = []
-        colors = palette.generate(lower=2)
+        colors = palette.generate(at_least=2)
         bg_color = colors[random.randint(0, len(colors) - 1)]
 
         context.clear(bg_color)

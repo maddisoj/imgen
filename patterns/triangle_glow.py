@@ -5,7 +5,7 @@ import random
 
 class Pattern(imgen.Pattern):
     def draw(self, image, context, palette):
-        colors = palette.generate(lower=5)
+        colors = palette.generate(at_least=2, at_most=5)
         steps = random.randint(10, 50)
         smallest_dim = min(image.width(), image.height())
         step = smallest_dim / steps
