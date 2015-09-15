@@ -61,10 +61,6 @@ gil::rgb32f_pixel_t image::get(int x, int y) const
     gil::bits8 b = pixels[index];
 #endif
 
-    fmt::print("{}\n", (uint32_t)pixels[index]);
-
-    fmt::print("{}, {}, {}\n", (int)r, (int)g, (int)b);
-
     return gil::rgb32f_pixel_t{
         gil::channel_convert<gil::bits32f>(r),
         gil::channel_convert<gil::bits32f>(g),
@@ -89,8 +85,6 @@ void image::set(int x, int y, const gil::rgb32f_pixel_t& pixel)
     auto r = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::red_t()));
     auto g = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::green_t()));
     auto b = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::blue_t()));
-
-    fmt::print("img::set {}, {}, {}\n", (int)r, (int)g, (int)b);
 
 #ifdef BOOST_BIG_ENDIAN
     pixels[index] = 0xFF;
