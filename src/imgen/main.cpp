@@ -61,32 +61,42 @@ int main(int argc, char** argv)
             auto seed = vm.count("seed") ? vm["seed"].as<unsigned>()
                                          : std::time(nullptr);
             auto exec_dir = fs::canonical(fs::system_complete(argv[0])).parent_path();
-            imgen::imgen prog(exec_dir);
+            // imgen::imgen prog(exec_dir);
 
-            // Set the seed for this generation.
-            prog.set_seed(seed);
+            // // Set the seed for this generation.
+            // prog.set_seed(seed);
 
-            // Palette and Pattern selection
-            std::string palette_name, pattern_name;
+            // // Palette and Pattern selection
+            // std::string palette_name, pattern_name;
 
-            if(vm.count("palette")) {
-                palette_name = vm["palette"].as<std::string>();
-            } else {
-                palette_name = prog.random_palette();
-            }
+            // if(vm.count("palette")) {
+            //     palette_name = vm["palette"].as<std::string>();
+            // } else {
+            //     palette_name = prog.random_palette();
+            // }
 
-            if(vm.count("pattern")) {
-                pattern_name = vm["pattern"].as<std::string>();
-            } else {
-                pattern_name = prog.random_pattern();
-            }
+            // if(vm.count("pattern")) {
+            //     pattern_name = vm["pattern"].as<std::string>();
+            // } else {
+            //     pattern_name = prog.random_pattern();
+            // }
 
-            prog.set_palette(palette_name);
-            prog.set_pattern(pattern_name);
-            prog.generate(dest, width, height);
+            // prog.set_palette(palette_name);
+            // prog.set_pattern(pattern_name);
+            // prog.generate(dest, width, height);
+            //
+            // fmt::print("Palette: {}\nPattern: {}\nSize: {}x{}\nSeed: {}",
+            //            palette_name, pattern_name, width, height, seed);
 
-            fmt::print("Palette: {}\nPattern: {}\nSize: {}x{}\nSeed: {}",
-                       palette_name, pattern_name, width, height, seed);
+            imgen::image img(width, height);;
+            imgen::context ctx(img);
+
+            ctx.clear({1, 0, 0});
+            fmt::print("{}\n", img.get(2, 2));
+            img.set(2, 2, {0, 1, 0});
+            fmt::print("{}\n", img.get(2, 2));
+
+            img.write_png(exec_dir / dest);
         } catch(const po::error& e) {
             fmt::print("Error: {}\n{}", e.what(), desc);
         } catch(const py::error_already_set& e) {

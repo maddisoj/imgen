@@ -9,12 +9,17 @@ image::image(int width, int height) {
     );
 }
 
+bool image::in_bounds(int x, int y) const
+{
+    return (x > 0 && x < width() && y > 0 && y < height());
+}
+
 void image::write_png(const fs::path& path) const
 {
     auto status = cairo_surface_write_to_png(surface.get(), path.c_str());
 
     if(status != CAIRO_STATUS_SUCCESS) {
-        throw new std::runtime_error(cairo_status_to_string(status));
+        throw std::runtime_error(cairo_status_to_string(status));
     }
 }
 
@@ -26,6 +31,87 @@ int image::width() const
 int image::height() const
 {
     return cairo_image_surface_get_height(surface.get());
+}
+
+gil::rgb32f_pixel_t image::get(int x, int y) const
+{
+    if(!in_bounds(x, y)) {
+        throw std::out_of_range("image::get");
+    }
+
+    cairo_surface_flush(surface.get());
+
+    auto stride = cairo_image_surface_get_stride(surface.get());
+    auto format = cairo_image_surface_get_format(surface.get());
+    auto index = index_for(x, y);
+
+    if(format != CAIRO_FORMAT_ARGB32 && format != CAIRO_FORMAT_RGB24) {
+        throw std::logic_error("image::get only supports ARGB32 and RGB24");
+    }
+
+    auto* pixels = cairo_image_surface_get_data(surface.get());
+
+#ifdef BOOST_BIG_ENDIAN
+    gil::bits8 r = pixels[index + 1];
+    gil::bits8 g = pixels[index + 2];
+    gil::bits8 b = pixels[index + 3];
+#else
+    gil::bits8 r = pixels[index + 2];
+    gil::bits8 g = pixels[index + 1];
+    gil::bits8 b = pixels[index];
+#endif
+
+    fmt::print("{}\n", (uint32_t)pixels[index]);
+
+    fmt::print("{}, {}, {}\n", (int)r, (int)g, (int)b);
+
+    return gil::rgb32f_pixel_t{
+        gil::channel_convert<gil::bits32f>(r),
+        gil::channel_convert<gil::bits32f>(g),
+        gil::channel_convert<gil::bits32f>(b)
+    };
+}
+
+void image::set(int x, int y, const gil::rgb32f_pixel_t& pixel)
+{
+    if(!in_bounds(x, y)) {
+        throw std::out_of_range("image::set");
+    }
+
+    auto format = cairo_image_surface_get_format(surface.get());
+    auto index = index_for(x, y);
+
+    if(format != CAIRO_FORMAT_ARGB32 && format != CAIRO_FORMAT_RGB24) {
+        throw std::logic_error("image::set only supports ARGB32 and RGB24");
+    }
+
+    auto* pixels = cairo_image_surface_get_data(surface.get());
+    auto r = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::red_t()));
+    auto g = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::green_t()));
+    auto b = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::blue_t()));
+
+    fmt::print("img::set {}, {}, {}\n", (int)r, (int)g, (int)b);
+
+#ifdef BOOST_BIG_ENDIAN
+    pixels[index] = 0xFF;
+    pixels[index + 1] = r;
+    pixels[index + 2] = g;
+    pixels[index + 3] = b;
+#else
+    pixels[index + 3] = 0xFF;
+    pixels[index + 2] = r;
+    pixels[index + 1] = g;
+    pixels[index] = b;
+#endif
+
+    cairo_surface_mark_dirty_rectangle(surface.get(), x, y, 1, 1);
+}
+
+int image::index_for(int x, int y) const
+{
+    auto stride = cairo_image_surface_get_stride(surface.get());
+
+    return y * stride + (x * 4);
 }
 
 boost::shared_ptr<cairo_surface_t> image::data()

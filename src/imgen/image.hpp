@@ -1,10 +1,14 @@
 #ifndef IMGEN_SURFACE_HPP_
 #define IMGEN_SURFACE_HPP_
 
+#include "color.hpp"
+
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/gil/gil_all.hpp>
+#include <boost/detail/endian.hpp>
 #include <cairo/cairo.h>
+#include <format.h>
 
 #include <string>
 #include <exception>
@@ -26,10 +30,17 @@ class image {
 public:
     image(int width, int height);
 
+    bool in_bounds(int x, int y) const;
     void write_png(const fs::path& path) const;
     int width() const;
     int height() const;
+    gil::rgb32f_pixel_t get(int x, int y) const;
+    void set(int x, int y, const gil::rgb32f_pixel_t& pixel);
+
     boost::shared_ptr<cairo_surface_t> data();
+
+private:
+    int index_for(int x, int y) const;
 };
 
 class context {

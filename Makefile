@@ -7,7 +7,7 @@ TARGET := imgen
 SRC := $(shell find $(SRCDIR) -type f -name *.cpp)
 OBJ := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SRC:.cpp=.o))
 CFLAGS := -std=c++11 -pedantic -Wall -Wextra -Wno-variadic-macros\
-	  -Wno-unused-variable -fexceptions -g -O3 -Isrc/\
+	  -Wno-unused-variable -fexceptions -g -Isrc/\
 	  $(shell python3-config --cflags) $(shell pkg-config --cflags cairo)
 LIBS := -lpng -lformat -lboost_python3 -lboost_program_options -lboost_system\
         -lboost_filesystem\
