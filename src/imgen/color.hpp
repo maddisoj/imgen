@@ -14,6 +14,9 @@ namespace gil = boost::gil;
 
 namespace imgen {
 
+/**
+ * Generates a random color in the desired format.
+ */
 template<typename ColorBase>
 ColorBase random_color()
 {
@@ -63,27 +66,35 @@ ColorBase blend(const ColorBase& left, const ColorBase& right, double proportion
 
 } // namespace imgen
 
+/**
+ * Overload to be able to stream pixels. Each channel is output in sequential
+ * order seperated by spaces.
+ */
 template<typename ChannelValue, typename Layout>
 std::ostream& operator<<(std::ostream& os,
-                         const boost::gil::pixel<ChannelValue, Layout>& color) {
+                         const gil::pixel<ChannelValue, Layout>& color) {
     auto num_channels
         = boost::gil::num_channels<boost::gil::pixel<ChannelValue, Layout> >();
 
     for(auto i = 0; i < num_channels; ++i) {
-        os << color[i] << ((i == num_channels - 1) ? "" : ", ");
+        os << color[i] << ((i == num_channels - 1) ? "" : " ");
     }
 
     return os;
 }
 
+/**
+ * Specialized overload for pixels using unsigned chars to ensure they're output
+ * as numbers. Each channel is output in sequential order seperated by spaces.
+ */
 template<typename Layout>
 std::ostream& operator<<(std::ostream& os,
-                         const boost::gil::pixel<unsigned char, Layout>& color) {
+                         const gil::pixel<unsigned char, Layout>& color) {
     auto num_channels
         = boost::gil::num_channels<boost::gil::pixel<unsigned char, Layout> >();
 
     for(auto i = 0; i < num_channels; ++i) {
-        os << static_cast<int>(color[i]) << ((i == num_channels - 1) ? "" : ", ");
+        os << static_cast<int>(color[i]) << ((i == num_channels - 1) ? "" : " ");
     }
 
     return os;

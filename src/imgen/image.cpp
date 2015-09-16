@@ -51,6 +51,8 @@ gil::rgb32f_pixel_t image::get(int x, int y) const
 
     auto* pixels = cairo_image_surface_get_data(surface.get());
 
+    // Depending on the endianess of the machine the pixel's channel order can
+    // be reversed. This ensures the channels use the correct index.
 #ifdef BOOST_BIG_ENDIAN
     gil::bits8 r = pixels[index + 1];
     gil::bits8 g = pixels[index + 2];
@@ -86,6 +88,8 @@ void image::set(int x, int y, const gil::rgb32f_pixel_t& pixel)
     auto g = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::green_t()));
     auto b = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::blue_t()));
 
+    // Depending on the endianess of the machine the pixel's channel order can
+    // be reversed. This ensures the channels use the correct index.
 #ifdef BOOST_BIG_ENDIAN
     pixels[index] = 0xFF;
     pixels[index + 1] = r;
