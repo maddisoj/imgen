@@ -74,15 +74,27 @@ public:
     pixel_t get(int x, int y) const;
 
     /**
+     * Returns a matrix of pixels of size (w, h). (x, y) is aligned to the top
+     * left of the matrix . If a pixel lies outside the boundaries of the image
+     * the padding value is used. The padding value defaults to (0, 0, 0).
+     */
+    ublas::matrix<pixel_t> region(int x, int y, int w, int h,
+                                  const image::pixel_t& padding = {0, 0, 0});
+
+    /**
      * Set a pixel to a value.
      *
-     * Throws std::out_of_range if the given coordinates are out of the image
-     * boundaries.
+     * Throws an std::out_of_range exception if the given coordinates are out of
+     * the image boundaries.
      */
     void set(int x, int y, const pixel_t& pixel);
 
-    ublas::matrix<pixel_t> region(int x, int y, int w, int h,
-                                  const image::pixel_t& padding = {0, 0, 0});
+    /**
+     * Set a region of pixels to a matrix of values. The top left value of the
+     * matrix is aligned to (x, y) of the image. Any values exceeding the
+     * boundaries of the image are ignored.
+     */
+    void set(int x, int y, const ublas::matrix<pixel_t>& pixels);
 
     /**
      * Returns a smart pointer to the underlying cairo handle.

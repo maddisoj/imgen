@@ -66,27 +66,44 @@ void image::set(int x, int y, const pixel_t& pixel)
     cairo_surface_mark_dirty_rectangle(surface.get(), x, y, 1, 1);
 }
 
+void image::set(int x, int y, const ublas::matrix<pixel_t>& pixels)
+{
+    int r = 0;
+    int c = 0;
+
+    for(auto row = pixels.begin1(); row != pixels.end1(); ++row) {
+        auto j = y + r;
+
+        for(auto pixel : row) {
+            auto i = x + c;
+
+            if(in_bounds(i, j)) {
+                write_pixel(i, j, pixel);
+            }
+
+            ++c;
+        }
+
+        ++r;
+    }
+
+    cairo_surface_mark_dirty_rectangle(surface.get(), x, y,
+                                       pixels.size1(), pixels.size2());
+}
+
 ublas::matrix<image::pixel_t> image::region(int x, int y, int w, int h,
                                             const pixel_t& padding)
 {
-    if(!in_bounds(x, y)) {
-        throw std::out_of_range("image::region");
-    }
-
-    auto top = static_cast<int>(std::floor(h / 2.0));
-    auto left = static_cast<int>(std::floor(w / 2.0));
-    auto bottom = h - top;
-    auto right = w - left;
     ublas::matrix<image::pixel_t> mat(w, h);
 
-    for(auto i = x - left; i < x + right; ++i) {
-        auto col = i - (x + left);
+    for(auto i = x; i < x + w; ++i) {
+        auto col = i - x;
 
-        for(auto j = y - top; j < y + bottom; ++j) {
-            auto row = j - (y + top);
+        for(auto j = y; j < y + h; ++j) {
+            auto row = j - y;
 
             if(in_bounds(i, j)) {
-                mat(col, row) = read_pixel(x, y);
+                mat(col, row) = read_pixel(i, j);
             } else {
                 mat(col, row) = pixel_t{padding};
             }
