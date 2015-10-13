@@ -33,7 +33,7 @@ int image::height() const
     return cairo_image_surface_get_height(surface.get());
 }
 
-gil::rgb32f_pixel_t image::get(int x, int y) const
+image::pixel_t image::get(int x, int y) const
 {
     if(!in_bounds(x, y)) {
         throw std::out_of_range("image::get");
@@ -41,15 +41,48 @@ gil::rgb32f_pixel_t image::get(int x, int y) const
 
     cairo_surface_flush(surface.get());
 
-    auto stride = cairo_image_surface_get_stride(surface.get());
     auto format = cairo_image_surface_get_format(surface.get());
-    auto index = index_for(x, y);
 
     if(format != CAIRO_FORMAT_ARGB32 && format != CAIRO_FORMAT_RGB24) {
         throw std::logic_error("image::get only supports ARGB32 and RGB24");
     }
 
-    auto* pixels = cairo_image_surface_get_data(surface.get());
+    return read_pixel(x, y);
+}
+
+void image::set(int x, int y, const pixel_t& pixel)
+{
+    if(!in_bounds(x, y)) {
+        throw std::out_of_range("image::set");
+    }
+
+    auto format = cairo_image_surface_get_format(surface.get());
+
+    if(format != CAIRO_FORMAT_ARGB32 && format != CAIRO_FORMAT_RGB24) {
+        throw std::logic_error("image::set only supports ARGB32 and RGB24");
+    }
+
+    write_pixel(x, y, pixel);
+    cairo_surface_mark_dirty_rectangle(surface.get(), x, y, 1, 1);
+}
+
+int image::index_for(int x, int y) const
+{
+    auto stride = cairo_image_surface_get_stride(surface.get());
+
+    // Each row contains `stride` elements and each pixel is 4 elements wide.
+    return y * stride + (x * 4);
+}
+
+boost::shared_ptr<cairo_surface_t> image::data()
+{
+    return boost::shared_ptr<cairo_surface_t>(surface);
+}
+
+image::pixel_t image::read_pixel(int x, int y) const
+{
+    auto pixels = cairo_image_surface_get_data(surface.get());
+    auto index = index_for(x, y);
 
     // Depending on the endianess of the machine the pixel's channel order can
     // be reversed. This ensures the channels use the correct index.
@@ -63,27 +96,17 @@ gil::rgb32f_pixel_t image::get(int x, int y) const
     gil::bits8 b = pixels[index];
 #endif
 
-    return gil::rgb32f_pixel_t{
-        gil::channel_convert<gil::bits32f>(r),
-        gil::channel_convert<gil::bits32f>(g),
-        gil::channel_convert<gil::bits32f>(b)
+    return pixel_t{
+        gil::channel_convert<channel_t>(r),
+        gil::channel_convert<channel_t>(g),
+        gil::channel_convert<channel_t>(b)
     };
 }
 
-void image::set(int x, int y, const gil::rgb32f_pixel_t& pixel)
+void image::write_pixel(int x, int y, const pixel_t& pixel)
 {
-    if(!in_bounds(x, y)) {
-        throw std::out_of_range("image::set");
-    }
-
-    auto format = cairo_image_surface_get_format(surface.get());
+    auto pixels = cairo_image_surface_get_data(surface.get());
     auto index = index_for(x, y);
-
-    if(format != CAIRO_FORMAT_ARGB32 && format != CAIRO_FORMAT_RGB24) {
-        throw std::logic_error("image::set only supports ARGB32 and RGB24");
-    }
-
-    auto* pixels = cairo_image_surface_get_data(surface.get());
     auto r = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::red_t()));
     auto g = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::green_t()));
     auto b = gil::channel_convert<gil::bits8>(gil::get_color(pixel, gil::blue_t()));
@@ -101,23 +124,10 @@ void image::set(int x, int y, const gil::rgb32f_pixel_t& pixel)
     pixels[index + 1] = g;
     pixels[index] = b;
 #endif
-
-    cairo_surface_mark_dirty_rectangle(surface.get(), x, y, 1, 1);
 }
 
-int image::index_for(int x, int y) const
+context::context(image& img) : img(img)
 {
-    auto stride = cairo_image_surface_get_stride(surface.get());
-
-    return y * stride + (x * 4);
-}
-
-boost::shared_ptr<cairo_surface_t> image::data()
-{
-    return boost::shared_ptr<cairo_surface_t>(surface);
-}
-
-context::context(image& img) : img(img) {
     ctx = boost::shared_ptr<cairo_t>(
         cairo_create(img.data().get()), cairo_destroy
     );
@@ -138,9 +148,14 @@ void context::rotate(double angle)
     cairo_rotate(ctx.get(), angle);
 }
 
-void context::set_color(const gil::rgb32f_pixel_t& color)
+void context::set_color(const image::pixel_t& color)
 {
-    cairo_set_source_rgb(ctx.get(), color[0], color[1], color[2]);
+    cairo_set_source_rgb(
+        ctx.get(),
+        gil::get_color(color, gil::red_t()),
+        gil::get_color(color, gil::green_t()),
+        gil::get_color(color, gil::blue_t())
+    );
 }
 
 void context::arc(double x, double y, double radius, double start, double end)
@@ -168,7 +183,7 @@ void context::fill()
     cairo_fill(ctx.get());
 }
 
-void context::clear(const gil::rgb32f_pixel_t& color)
+void context::clear(const image::pixel_t& color)
 {
     set_color(color);
     rectangle(0, 0, img.width(), img.height());
@@ -177,7 +192,7 @@ void context::clear(const gil::rgb32f_pixel_t& color)
 
 boost::shared_ptr<cairo_t> context::data()
 {
-    return ctx;
+    return boost::shared_ptr<cairo_t>(ctx);
 }
 
 } // namespace imgen

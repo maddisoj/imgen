@@ -1,7 +1,7 @@
-#ifndef IMGEN_SURFACE_HPP_
-#define IMGEN_SURFACE_HPP_
+#ifndef IMGEN_IMAGE_HPP_
+#define IMGEN_IMAGE_HPP_
 
-#include "color.hpp"
+#include "imgen/color.hpp"
 
 #include <boost/detail/endian.hpp>
 #include <boost/filesystem.hpp>
@@ -11,9 +11,11 @@
 #include <cairo/cairo.h>
 #include <format.h>
 
-#include <string>
-#include <exception>
 #include <cmath>
+#include <exception>
+#include <functional>
+#include <string>
+#include <vector>
 
 namespace fs = boost::filesystem;
 namespace gil = boost::gil;
@@ -32,6 +34,9 @@ class image {
     boost::shared_ptr<cairo_surface_t> surface;
 
 public:
+    typedef gil::rgb32f_pixel_t pixel_t;
+    typedef typename gil::channel_type<pixel_t>::type channel_t;
+
     /**
      * Create an ARGB image with dimensions width x height.
      */
@@ -64,7 +69,7 @@ public:
      * Throws std::out_of_range if the given coordinates are out of the image
      * boundaries.
      */
-    gil::rgb32f_pixel_t get(int x, int y) const;
+    pixel_t get(int x, int y) const;
 
     /**
      * Set a pixel to a value.
@@ -72,7 +77,7 @@ public:
      * Throws std::out_of_range if the given coordinates are out of the image
      * boundaries.
      */
-    void set(int x, int y, const gil::rgb32f_pixel_t& pixel);
+    void set(int x, int y, const pixel_t& pixel);
 
     /**
      * Returns a smart pointer to the underlying cairo handle.
@@ -84,6 +89,21 @@ private:
      * Calculates the index of the pixel at coordinates (x, y).
      */
     int index_for(int x, int y) const;
+
+    /**
+     * Reads the pixel from the image data at coordinates (x, y).
+     *
+     * This does not check image boundaries or format.
+     */
+    pixel_t read_pixel(int x, int y) const;
+
+    /**
+     * Sets the image data at coordinates (x, y) to a color.
+     *
+     * This does not check image boundaries, format or mark the modified pixel
+     * as dirty.
+     */
+    void write_pixel(int x, int y, const pixel_t& pixel);
 };
 
 /**
@@ -106,7 +126,7 @@ public:
     /**
      * Sets the color that any subsequent operations will be in.
      */
-    void set_color(const gil::rgb32f_pixel_t& color);
+    void set_color(const image::pixel_t& color);
 
     // Transformation Functions
     void translate(double x, double y);
@@ -132,7 +152,7 @@ public:
      * Sets the entire image to a color, if no color is provided then black is
      * used.
      */
-    void clear(const gil::rgb32f_pixel_t& color = {0, 0, 0});
+    void clear(const image::pixel_t& color = {0, 0, 0});
 
     /**
      * Return a smart pointer to the underlying cairo handle.
