@@ -11,7 +11,7 @@ image::image(int width, int height) {
 
 bool image::in_bounds(int x, int y) const
 {
-    return (x > 0 && x < width() && y > 0 && y < height());
+    return (x >= 0 && x < width() && y >= 0 && y < height());
 }
 
 void image::write_png(const fs::path& path) const
@@ -64,6 +64,36 @@ void image::set(int x, int y, const pixel_t& pixel)
 
     write_pixel(x, y, pixel);
     cairo_surface_mark_dirty_rectangle(surface.get(), x, y, 1, 1);
+}
+
+ublas::matrix<image::pixel_t> image::region(int x, int y, int w, int h,
+                                            const pixel_t& padding)
+{
+    if(!in_bounds(x, y)) {
+        throw std::out_of_range("image::region");
+    }
+
+    auto top = static_cast<int>(std::floor(h / 2.0));
+    auto left = static_cast<int>(std::floor(w / 2.0));
+    auto bottom = h - top;
+    auto right = w - left;
+    ublas::matrix<image::pixel_t> mat(w, h);
+
+    for(auto i = x - left; i < x + right; ++i) {
+        auto col = i - (x + left);
+
+        for(auto j = y - top; j < y + bottom; ++j) {
+            auto row = j - (y + top);
+
+            if(in_bounds(i, j)) {
+                mat(col, row) = read_pixel(x, y);
+            } else {
+                mat(col, row) = pixel_t{padding};
+            }
+        }
+    }
+
+    return mat;
 }
 
 int image::index_for(int x, int y) const

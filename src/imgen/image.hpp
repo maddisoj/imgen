@@ -6,6 +6,7 @@
 #include <boost/detail/endian.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/gil/gil_all.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/smart_ptr/weak_ptr.hpp>
 #include <cairo/cairo.h>
@@ -19,6 +20,7 @@
 
 namespace fs = boost::filesystem;
 namespace gil = boost::gil;
+namespace ublas = boost::numeric::ublas;
 
 namespace imgen {
 
@@ -78,6 +80,9 @@ public:
      * boundaries.
      */
     void set(int x, int y, const pixel_t& pixel);
+
+    ublas::matrix<pixel_t> region(int x, int y, int w, int h,
+                                  const image::pixel_t& padding = {0, 0, 0});
 
     /**
      * Returns a smart pointer to the underlying cairo handle.
