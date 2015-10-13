@@ -28,4 +28,4 @@ bindings:
 clean:
 	rm -rf "$(BUILDDIR)" "$(TARGET)" "$(MODULEDIR)"
 
-.PHONY: bindings bindings-install clean
+.PHONY: bindings clean
