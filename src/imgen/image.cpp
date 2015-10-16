@@ -68,23 +68,18 @@ void image::set(int x, int y, const pixel_t& pixel)
 
 void image::set(int x, int y, const ublas::matrix<pixel_t>& pixels)
 {
-    int r = 0;
-    int c = 0;
+    using size_type = ublas::matrix<pixel_t>::size_type;
 
-    for(auto row = pixels.begin1(); row != pixels.end1(); ++row) {
-        auto j = y + r;
+    for(size_type r = 0; r < pixels.size1(); ++r) {
+        auto dx = x + r;
 
-        for(auto pixel : row) {
-            auto i = x + c;
+        for(size_type c = 0; c < pixels.size2(); ++c) {
+            auto dy = y + c;
 
-            if(in_bounds(i, j)) {
-                write_pixel(i, j, pixel);
+            if(in_bounds(dx, dy)) {
+                write_pixel(dx, dy, pixels(r, c));
             }
-
-            ++c;
         }
-
-        ++r;
     }
 
     cairo_surface_mark_dirty_rectangle(surface.get(), x, y,
