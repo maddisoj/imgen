@@ -7,6 +7,8 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <format.h>
 
+#include <functional>
+
 namespace gil = boost::gil;
 namespace ublas = boost::numeric::ublas;
 
@@ -21,7 +23,19 @@ namespace imgen {
 typedef ublas::matrix<float> filter_t;
 
 /**
- * Applies a filter to an image using sliding neighbourhood convolution. This
+ * Apply a function to each region of an image using a sliding neighbourhood.
+ * This can be slow on large images. The neighbourhood is padded with 0s.
+ *
+ * img - the image to apply the function to
+ * w - the width of the region
+ * h - the height of the region
+ * f - the function to apply to each region
+ */
+void nlfilter(image& img, std::size_t w, std::size_t h,
+              std::function<image::pixel_t(const ublas::matrix<image::pixel_t>&)> f);
+
+/**
+ * Applies a filter to an image using sliding neighbourhood correlation. This
  * can be slow on large images. The neighbourhood is padded with 0s.
  *
  * TODO: Give a way to define the padding element.
@@ -31,7 +45,7 @@ void filter(image& img, const filter_t& filter);
 /**
  * Produces a square gaussian filter mask. The mask is calcualted using:
  *
- * g(x, y) = e ^ -(x^2 + y^2) / (2 * σ^2)
+ * g(x, y) = e ^ (-(x^2 + y^2) / (2 * σ^2))
  *
  * Where the center element of the matrix is the origin. The mask is then
  * normalized. σ defaults to 0.5.
