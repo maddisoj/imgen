@@ -29,7 +29,7 @@ void path::draw(context& ctx, bool close) const
                 break;
 
             default:
-                throw new std::logic_error(fmt::format(
+                throw std::logic_error(fmt::format(
                     "Unimplemented path operation: {}", type
                 ));
         }
