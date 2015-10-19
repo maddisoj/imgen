@@ -10,7 +10,6 @@
 #include <boost/python.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
 
-#include <cstdlib>
 #include <string>
 
 namespace py = boost::python;
